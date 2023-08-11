@@ -21,94 +21,102 @@ const createCardToken = async (card) => {
     accept: "application/json",
     apikey: CLOVER_PAKMS_API_KEY,
   };
-  const result = await axios.post(
-    "https://token-sandbox.dev.clover.com/v1/tokens",
-    card,
-    {
-      headers: headers,
-    }
-  );
-  return result.data;
+  try {
+    // @ts-ignore
+    const result = await axios.post(
+      "https://token-sandbox.dev.clover.com/v1/tokens",
+      card,
+      {
+        headers: headers,
+      }
+    );
+    return result.data;
+  } catch (error) {
+    const { response } = error;
+    const { request, ...errorObject } = response; // take everything but 'request'
+    console.log(
+      "-----------------------TOKEN ERROR--------------------------------------------"
+    );
+    console.log(errorObject.data);
+    return errorObject.data;
+  }
 };
 
 const buildOrder = async (items, currency, email) => {
-  const body = {
-    orderCart: {
-      lineItems: [
-        {
-          item: { id: "M5X6AGB6T4JCJ" },
-          printed: "false",
-          exchanged: "false",
-          price: 350,
-          refunded: "false",
-          isRevenue: "false",
-          unitQty: 1,
-          name: "Cup of Soup",
-        },
-        {
-          item: { id: "WNJ0DWTEQ38VM" },
-          printed: "false",
-          exchanged: "false",
-          price: 750,
-          refunded: "false",
-          isRevenue: "false",
-          unitQty: 1,
-          name: "California Salad",
-        },
-      ],
-    },
-  };
+  const body = { orderCart: items };
   const headers = {
     "Content-Type": "application/json",
     accept: "application/json",
     authorization: `Bearer ${ACCESS_TOKEN}`,
   };
-  const result = await axios.post(
-    `https://sandbox.dev.clover.com/v3/merchants/${MERCHANT_ID}/atomic_order/orders`,
-    body,
-    {
-      headers: headers,
-    }
-  );
-  return result.data;
+  try {
+    // @ts-ignore
+    const result = await axios.post(
+      `https://sandbox.dev.clover.com/v3/merchants/${MERCHANT_ID}/atomic_order/orders`,
+      body,
+      {
+        headers: headers,
+      }
+    );
+    return result.data;
+  } catch (error) {
+    const { response } = error;
+    const { request, ...errorObject } = response; // take everything but 'request'
+    console.log(
+      "----------------------ORDER ERROR--------------------------------------------"
+    );
+    console.log(errorObject.data);
+
+    return errorObject.data;
+  }
 };
 const orderPayment = async (order, token) => {
-  console.log("order", order);
-  console.log("token", token);
-  const options = {
-    method: "POST",
-    headers: {
-      accept: "application/json",
-      "content-type": "application/json",
-      authorization: `Bearer ${ACCESS_TOKEN}`,
-    },
-    body: JSON.stringify({ ecomind: "ecom", source: token }),
+  // const options = {
+  //   method: "POST",
+  //   headers: {
+  //     accept: "application/json",
+  //     "content-type": "application/json",
+  //     authorization: `Bearer ${ACCESS_TOKEN}`,
+  //   },
+  //   body: JSON.stringify({ ecomind: "ecom", source: token }),
+  // };
+
+  // fetch(`https://scl-sandbox.dev.clover.com/v1/orders/${order}/pay`, options)
+  //   .then((response) => response.json())
+  //   .then((response) => console.log(response))
+  //   .catch((err) => console.error(err));
+
+  const headers = {
+    "Content-Type": "application/json",
+    accept: "application/json",
+    authorization: `Bearer ${ACCESS_TOKEN}`,
   };
+  const body = {
+    ecomind: "ecom",
+    source: token,
+    ///customer: "John Doe", need to add customer info to order
+    email: "kfjsalfk@lkajsf.com",
+  };
+  try {
+    // @ts-ignore
+    const result = await axios.post(
+      `https://scl-sandbox.dev.clover.com/v1/orders/${order}/pay`,
+      body,
+      {
+        headers: headers,
+      }
+    );
+    return result.data;
+  } catch (error) {
+    const { response } = error;
+    const { request, ...errorObject } = response; // take everything but 'request'
+    console.log(
+      "--------------------- PAYMENT ERROR--------------------------------------------"
+    );
+    console.log(errorObject.data);
 
-  fetch(`https://scl-sandbox.dev.clover.com/v1/orders/${order}/pay`, options)
-    .then((response) => response.json())
-    .then((response) => console.log(response))
-    .catch((err) => console.error(err));
-
-  // const headers = {
-  //   "Content-Type": "application/json",
-  //   accept: "application/json",
-  //   authorization: `Bearer ${ACCESS_TOKEN}`,
-  // };
-  // const body = {
-  //   ecomind: "ecom",
-  //   source: token,
-  //   customer: "",
-  //   email: "kfjsalfk@lkajsf.com",
-  // };
-  // const result = await axios.post(
-  //   `https://scl-sandbox.dev.clover.com/v1/orders/${order}/pay`,
-  //   body,
-  //   {
-  //     headers: headers,
-  //   }
-  // );
-  // return result.data;
+    return errorObject.data;
+  }
 };
 module.exports = {
   cloverGetAuth: async (ctx) => {
@@ -118,13 +126,25 @@ module.exports = {
       const body = ctx.request.body;
       const card = { card: body.card };
       const token = await createCardToken(card);
-      console.log("create line item", token);
+      console.log("create token", token);
+      console.log(
+        "-------------------------------------------------------------------"
+      );
       if (token)
-        order = await buildOrder(body.items, body.currency, body.user.email);
+        order = await buildOrder(
+          body.orderCart,
+          body.currency,
+          body.user.email
+        );
       console.log("create order", order);
+      console.log(
+        "-------------------------------------------------------------------"
+      );
       if (order) orderInfo = await orderPayment(order.id, token.id);
       console.log("create orderInfo", orderInfo);
-
+      console.log(
+        "-------------------------------------------------------------------"
+      );
       return orderInfo;
     } catch (err) {
       return err;
