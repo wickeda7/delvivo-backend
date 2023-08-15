@@ -10,6 +10,7 @@ const CLOVER_ECOMMERCE_API_TOKEN = process.env.CLOVER_ECOMMERCE_API_TOKEN;
 const CLOVER_PAKMS_API_KEY = process.env.CLOVER_PAKMS_API_KEY;
 const Clover = require("clover-ecomm-sdk");
 const sdk = require("api")("@clover-platform/v3#1sr4iljgx5yiu");
+const GOOGLE_MAPS_API_KEY = process.env.GOOGLE_MAPS_API_KEY;
 const cloverInst = new Clover(ACCESS_TOKEN, {
   environment: ENVIRONMENT,
 });
@@ -119,6 +120,20 @@ const orderPayment = async (order, token) => {
   }
 };
 module.exports = {
+  cloverGetMap: async (ctx) => {
+    const body = ctx.request.body;
+    try {
+      // @ts-ignore
+      const result = await axios.get(
+        `https://maps.googleapis.com/maps/api/distancematrix/json?key=${GOOGLE_MAPS_API_KEY}&origins=${body.origins}&destinations=${body.destinations}&units=imperial`
+      );
+      return result.data;
+    } catch (error) {
+      const { response } = error;
+      const { request, ...errorObject } = response; // take everything but 'request'
+      return errorObject.data;
+    }
+  },
   cloverGetAuth: async (ctx) => {
     let orderInfo,
       order = null;

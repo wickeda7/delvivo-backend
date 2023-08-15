@@ -17,5 +17,15 @@ module.exports = {
         middlewares: [],
       },
     },
+    {
+      // Path defined with a regular expression
+      method: "POST",
+      path: "/clover/map", // Only match when the URL parameter is composed of lowercase letters
+      handler: "clover.cloverGetMap",
+      config: {
+        policies: [],
+        middlewares: [],
+      },
+    },
   ],
 };

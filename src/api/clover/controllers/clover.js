@@ -8,12 +8,20 @@ module.exports = {
         .service("api::clover.clover")
         .cloverGetAuth(ctx);
       ctx.body = data;
-      // ctx.send(
-      //   {
-      //     message: "The content was created!",
-      //   },
-      //   201
-      // );
+    } catch (err) {
+      ctx.badRequest("Post report controller error", { moreDetails: err });
+    }
+  },
+  async cloverGetMap(ctx, next) {
+    try {
+      const data = await strapi.service("api::clover.clover").cloverGetMap(ctx);
+      ctx.body = data;
+      ctx.send(
+        {
+          data,
+        },
+        200
+      );
     } catch (err) {
       ctx.badRequest("Post report controller error", { moreDetails: err });
     }
