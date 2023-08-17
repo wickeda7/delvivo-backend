@@ -1,0 +1,29 @@
+{
+  "kind": "collectionType",
+  "collectionName": "merchants",
+  "info": {
+    "singularName": "merchant",
+    "pluralName": "merchants",
+    "displayName": "merchant",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "merchant_id": {
+      "type": "string",
+      "unique": true
+    },
+    "employee_id": {
+      "type": "string"
+    },
+    "client_id": {
+      "type": "string"
+    },
+    "access_token": {
+      "type": "string"
+    }
+  }
+}
