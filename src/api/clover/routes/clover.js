@@ -1,17 +1,17 @@
 "use strict";
 module.exports = {
   routes: [
-    // {
-    //   // Path defined with an URL parameter
-    //   method: "POST",
-    //   path: "/clover/:id/review",
-    //   handler: "restaurant.review",
-    // },
+    {
+      // Path defined with an URL parameter
+      method: "POST",
+      path: "/clover",
+      handler: "clover.cloverGetAuth",
+    },
     {
       // Path defined with a regular expression
       method: "POST",
-      path: "/clover", // Only match when the URL parameter is composed of lowercase letters
-      handler: "clover.cloverGetAuth",
+      path: "/clover/pay", // Only match when the URL parameter is composed of lowercase letters
+      handler: "clover.cloverOrder",
       config: {
         policies: [],
         middlewares: [],

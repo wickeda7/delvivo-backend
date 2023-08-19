@@ -24,6 +24,9 @@
     },
     "access_token": {
       "type": "string"
+    },
+    "pakms_apikey": {
+      "type": "string"
     }
   }
 }

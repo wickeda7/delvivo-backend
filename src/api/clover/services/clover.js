@@ -1,129 +1,34 @@
 require("dotenv").config();
 const axios = require("axios");
-const CLOVER_APP = process.env.CLOVER_APP;
-const CLOVER_APP_ID = process.env.CLOVER_APP_ID;
-const ACCESS_TOKEN = process.env.CLOVER_ACCESS_TOKEN;
-const ENVIRONMENT = process.env.ENVIRONMENT;
-const API_KEY = process.env.API_KEY;
-const MERCHANT_ID = process.env.CLOVER_MERCHANT_ID;
-const CLOVER_ECOMMERCE_API_TOKEN = process.env.CLOVER_ECOMMERCE_API_TOKEN;
-const CLOVER_PAKMS_API_KEY = process.env.CLOVER_PAKMS_API_KEY;
-const Clover = require("clover-ecomm-sdk");
-const sdk = require("api")("@clover-platform/v3#1sr4iljgx5yiu");
+// @ts-ignore
+const {
+  createCardToken,
+  buildOrder,
+  orderPayment,
+  getAuth,
+  getPakms,
+} = require("../utils");
+
 const GOOGLE_MAPS_API_KEY = process.env.GOOGLE_MAPS_API_KEY;
-const cloverInst = new Clover(ACCESS_TOKEN, {
-  environment: ENVIRONMENT,
-});
 
 //service
-const createCardToken = async (card) => {
-  const headers = {
-    "Content-Type": "application/json",
-    accept: "application/json",
-    apikey: CLOVER_PAKMS_API_KEY,
-  };
-  try {
-    // @ts-ignore
-    const result = await axios.post(
-      "https://token-sandbox.dev.clover.com/v1/tokens",
-      card,
-      {
-        headers: headers,
-      }
-    );
-    return result.data;
-  } catch (error) {
-    const { response } = error;
-    const { request, ...errorObject } = response; // take everything but 'request'
-    console.log(
-      "-----------------------TOKEN ERROR--------------------------------------------"
-    );
-    console.log(errorObject.data);
-    return errorObject.data;
-  }
-};
 
-const buildOrder = async (items, currency, email) => {
-  const body = { orderCart: items };
-  const headers = {
-    "Content-Type": "application/json",
-    accept: "application/json",
-    authorization: `Bearer ${ACCESS_TOKEN}`,
-  };
-  console.log(
-    `https://sandbox.dev.clover.com/v3/merchants/${MERCHANT_ID}/atomic_order/orders`
-  );
-  console.log(`Bearer ${ACCESS_TOKEN}`);
-  try {
-    // @ts-ignore
-    const result = await axios.post(
-      `https://sandbox.dev.clover.com/v3/merchants/${MERCHANT_ID}/atomic_order/orders`,
-      body,
-      {
-        headers: headers,
-      }
-    );
-    return result.data;
-  } catch (error) {
-    const { response } = error;
-    const { request, ...errorObject } = response; // take everything but 'request'
-    console.log(
-      "----------------------ORDER ERROR--------------------------------------------"
-    );
-    console.log(errorObject.data);
-
-    return errorObject.data;
-  }
-};
-const orderPayment = async (order, token) => {
-  // const options = {
-  //   method: "POST",
-  //   headers: {
-  //     accept: "application/json",
-  //     "content-type": "application/json",
-  //     authorization: `Bearer ${ACCESS_TOKEN}`,
-  //   },
-  //   body: JSON.stringify({ ecomind: "ecom", source: token }),
-  // };
-
-  // fetch(`https://scl-sandbox.dev.clover.com/v1/orders/${order}/pay`, options)
-  //   .then((response) => response.json())
-  //   .then((response) => console.log(response))
-  //   .catch((err) => console.error(err));
-
-  const headers = {
-    "Content-Type": "application/json",
-    accept: "application/json",
-    authorization: `Bearer ${ACCESS_TOKEN}`,
-  };
-  const body = {
-    ecomind: "ecom",
-    source: token,
-    ///customer: "John Doe", need to add customer info to order
-    email: "kfjsalfk@lkajsf.com",
-  };
-  try {
-    // @ts-ignore
-    const result = await axios.post(
-      `https://scl-sandbox.dev.clover.com/v1/orders/${order}/pay`,
-      body,
-      {
-        headers: headers,
-      }
-    );
-    return result.data;
-  } catch (error) {
-    const { response } = error;
-    const { request, ...errorObject } = response; // take everything but 'request'
-    console.log(
-      "--------------------- PAYMENT ERROR--------------------------------------------"
-    );
-    console.log(errorObject.data);
-
-    return errorObject.data;
-  }
-};
 module.exports = {
+  cloverGetAuth: async (ctx) => {
+    const body = ctx.request.body;
+    try {
+      const result = await getAuth(
+        body.code,
+        body.employee_id,
+        body.merchant_id
+      );
+      return result;
+    } catch (error) {
+      const { response } = error;
+      const { request, ...errorObject } = response; // take everything but 'request'
+      return errorObject.data;
+    }
+  },
   cloverGetMap: async (ctx) => {
     const body = ctx.request.body;
     try {
@@ -138,28 +43,30 @@ module.exports = {
       return errorObject.data;
     }
   },
-  cloverGetAuth: async (ctx) => {
+  cloverOrder: async (ctx) => {
     let orderInfo,
       order = null;
+
     try {
       const body = ctx.request.body;
       const card = { card: body.card };
-      const token = await createCardToken(card);
+      const merchant_id = body.merchant_id;
+
+      const { pakms_apikey, access_token } = await getPakms(merchant_id);
+
+      const token = await createCardToken(card, pakms_apikey);
       console.log("create token", token);
       console.log(
         "-------------------------------------------------------------------"
       );
       if (token)
-        order = await buildOrder(
-          body.orderCart,
-          body.currency,
-          body.user.email
-        );
+        order = await buildOrder(body.orderCart, access_token, merchant_id);
       console.log("create order", order);
       console.log(
         "-------------------------------------------------------------------"
       );
-      if (order) orderInfo = await orderPayment(order.id, token.id);
+      if (order)
+        orderInfo = await orderPayment(order.id, token.id, access_token);
       console.log("create orderInfo", orderInfo);
       console.log(
         "-------------------------------------------------------------------"
