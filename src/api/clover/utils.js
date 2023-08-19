@@ -79,8 +79,8 @@ const createCardToken = async (card, pakms_apikey) => {
     apikey: pakms_apikey,
   };
   try {
-    // @ts-ignore
     const data = card.card;
+    // @ts-ignore
     const result = await axios.post(
       "https://token-sandbox.dev.clover.com/v1/tokens",
       card,
@@ -102,6 +102,7 @@ const createCardToken = async (card, pakms_apikey) => {
 
 const buildOrder = async (items, access_token, merchant_id) => {
   const body = { orderCart: items };
+  console.log("body", body.orderCart.lineItems);
   const headers = {
     "Content-Type": "application/json",
     accept: "application/json",
