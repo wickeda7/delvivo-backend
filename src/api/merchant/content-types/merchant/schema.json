@@ -27,6 +27,9 @@
     },
     "pakms_apikey": {
       "type": "string"
+    },
+    "order_types": {
+      "type": "json"
     }
   }
 }
