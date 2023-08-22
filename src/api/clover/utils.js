@@ -206,10 +206,7 @@ const buildOrder = async (items, access_token, merchant_id) => {
     accept: "application/json",
     authorization: `Bearer ${access_token}`,
   };
-  console.log(
-    `https://sandbox.dev.clover.com/v3/merchants/${merchant_id}/atomic_order/orders`
-  );
-  console.log(`Bearer ${ACCESS_TOKEN}`);
+
   try {
     // @ts-ignore
     const result = await axios.post(

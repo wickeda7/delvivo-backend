@@ -7,6 +7,7 @@ module.exports = {
       path: "/clover",
       handler: "clover.cloverGetAuth",
     },
+
     {
       // Path defined with a regular expression
       method: "POST",
