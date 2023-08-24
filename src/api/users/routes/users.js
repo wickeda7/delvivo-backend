@@ -19,5 +19,15 @@ module.exports = {
         middlewares: [],
       },
     },
+    {
+      // Path defined with an URL parameter
+      method: "POST",
+      path: "/users/login", ///api/users/register
+      handler: "users.cloverLogin",
+      config: {
+        policies: [],
+        middlewares: [],
+      },
+    },
   ],
 };

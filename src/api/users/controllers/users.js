@@ -25,4 +25,17 @@ module.exports = {
       ctx.badRequest("Post report controller error", { moreDetails: err });
     }
   },
+  async cloverLogin(ctx, next) {
+    try {
+      const data = await strapi.service("api::users.users").cloverLogin(ctx);
+      ctx.send(
+        {
+          data,
+        },
+        200
+      );
+    } catch (err) {
+      ctx.badRequest("Post report controller error", { moreDetails: err });
+    }
+  },
 };

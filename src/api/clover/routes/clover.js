@@ -3,6 +3,19 @@ module.exports = {
   routes: [
     {
       // Path defined with an URL parameter
+      method: "GET",
+      path: "/clover/setup",
+      handler: "clover.cloverSetup",
+    },
+
+    {
+      // Path defined with an URL parameter
+      method: "POST",
+      path: "/clover/setup",
+      handler: "clover.cloverSetup",
+    },
+    {
+      // Path defined with an URL parameter
       method: "POST",
       path: "/clover",
       handler: "clover.cloverGetAuth",

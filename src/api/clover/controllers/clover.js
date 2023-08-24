@@ -1,6 +1,16 @@
 "use strict";
 //controller
 module.exports = {
+  async cloverSetup(ctx, next) {
+    console.log("cloverSetup");
+    console.log("ctx", ctx);
+    ctx.send(
+      {
+        message: "cloverSetup",
+      },
+      200
+    );
+  },
   async cloverGetAuth(ctx, next) {
     try {
       const data = await strapi

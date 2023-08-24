@@ -72,6 +72,9 @@
     },
     "lastName": {
       "type": "string"
+    },
+    "merchant_id": {
+      "type": "string"
     }
   }
 }

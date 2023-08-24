@@ -1,10 +1,11 @@
 require("dotenv").config();
 const axios = require("axios");
-const CLOVER_PAKMS_API_KEY = process.env.CLOVER_PAKMS_API_KEY;
-const ACCESS_TOKEN = process.env.CLOVER_ACCESS_TOKEN;
-const MERCHANT_ID = process.env.CLOVER_MERCHANT_ID;
 const CLOVER_APP_ID = process.env.CLOVER_APP_ID;
 const CLOVER_APP_SECRET = process.env.CLOVER_APP_SECRET;
+const CLOVER_APP_URL = process.env.CLOVER_APP_URL;
+const CLOVER_APIS_URL = process.env.CLOVER_APIS_URL;
+const CLOVER_TOKEN_URL = process.env.CLOVER_TOKEN_URL;
+const CLOVER_SCL_URL = process.env.CLOVER_SCL_URL;
 
 const getPakms = async (merchant_id) => {
   const entry = await strapi.db.query("api::merchant.merchant").findOne({
@@ -16,7 +17,7 @@ const getPakms = async (merchant_id) => {
 const getAccessToken = async (code) => {
   // @ts-ignore
   const token = await axios.get(
-    `https://sandbox.dev.clover.com/oauth/token?client_id=${CLOVER_APP_ID}&client_secret=${CLOVER_APP_SECRET}&code=${code}`
+    `${CLOVER_APP_URL}/oauth/token?client_id=${CLOVER_APP_ID}&client_secret=${CLOVER_APP_SECRET}&code=${code}`
   );
   return token.data.access_token;
 };
@@ -29,12 +30,9 @@ const createPakms = async (access_token) => {
   };
 
   // @ts-ignore
-  const result = await axios.get(
-    `https://apisandbox.dev.clover.com/pakms/apikey`,
-    {
-      headers: headers,
-    }
-  );
+  const result = await axios.get(`${CLOVER_APIS_URL}/pakms/apikey`, {
+    headers: headers,
+  });
   console.log("result", result.data);
   return result.data.apiAccessKey;
 };
@@ -101,7 +99,7 @@ const createOrderTypes = async (access_token, merchant_id) => {
   };
   // @ts-ignore
   const pickupRes = await axios.post(
-    `https://sandbox.dev.clover.com/v3/merchants/${merchant_id}/order_types`,
+    `${CLOVER_APP_URL}/v3/merchants/${merchant_id}/order_types`,
     pickup,
     {
       headers: headers,
@@ -112,7 +110,7 @@ const createOrderTypes = async (access_token, merchant_id) => {
     orderTypes.pickup = { id: pickupRes.data.id };
     // @ts-ignore
     const deliveryRes = await axios.post(
-      `https://sandbox.dev.clover.com/v3/merchants/${merchant_id}/order_types`,
+      `${CLOVER_APP_URL}/v3/merchants/${merchant_id}/order_types`,
       delivery,
       {
         headers: headers,
@@ -179,13 +177,9 @@ const createCardToken = async (card, pakms_apikey) => {
   try {
     const data = card.card;
     // @ts-ignore
-    const result = await axios.post(
-      "https://token-sandbox.dev.clover.com/v1/tokens",
-      card,
-      {
-        headers: headers,
-      }
-    );
+    const result = await axios.post(`${CLOVER_TOKEN_URL}/v1/tokens`, card, {
+      headers: headers,
+    });
     return result.data;
   } catch (error) {
     const { response } = error;
@@ -210,7 +204,7 @@ const buildOrder = async (items, access_token, merchant_id) => {
   try {
     // @ts-ignore
     const result = await axios.post(
-      `https://sandbox.dev.clover.com/v3/merchants/${merchant_id}/atomic_order/orders`,
+      `${CLOVER_APP_URL}/v3/merchants/${merchant_id}/atomic_order/orders`,
       body,
       {
         headers: headers,
@@ -258,7 +252,7 @@ const orderPayment = async (order, token, access_token) => {
   try {
     // @ts-ignore
     const result = await axios.post(
-      `https://scl-sandbox.dev.clover.com/v1/orders/${order}/pay`,
+      `${CLOVER_SCL_URL}/v1/orders/${order}/pay`,
       body,
       {
         headers: headers,

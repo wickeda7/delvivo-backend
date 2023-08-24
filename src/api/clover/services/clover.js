@@ -1,5 +1,6 @@
 require("dotenv").config();
 const axios = require("axios");
+
 // @ts-ignore
 const {
   createCardToken,
@@ -10,6 +11,7 @@ const {
 } = require("../utils");
 
 const GOOGLE_MAPS_API_KEY = process.env.GOOGLE_MAPS_API_KEY;
+const GOOGLE_URL = process.env.GOOGLE_URL;
 
 //service
 
@@ -34,7 +36,7 @@ module.exports = {
     try {
       // @ts-ignore
       const result = await axios.get(
-        `https://maps.googleapis.com/maps/api/distancematrix/json?key=${GOOGLE_MAPS_API_KEY}&origins=${body.origins}&destinations=${body.destinations}&units=imperial`
+        `${GOOGLE_URL}/maps/api/distancematrix/json?key=${GOOGLE_MAPS_API_KEY}&origins=${body.origins}&destinations=${body.destinations}&units=imperial`
       );
       return result.data;
     } catch (error) {

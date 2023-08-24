@@ -2,24 +2,17 @@ require("dotenv").config();
 const axios = require("axios");
 const utils = require("../../../node_modules/@strapi/utils");
 const _ = require("lodash");
+const CLOVER_APP_URL = process.env.CLOVER_APP_URL;
 
-const {
-  validateCallbackBody,
-  validateRegisterBody,
-  validateSendEmailConfirmationBody,
-  validateForgotPasswordBody,
-  validateResetPasswordBody,
-  validateEmailConfirmationBody,
-  validateChangePasswordBody,
-} = require("../../../node_modules/@strapi/plugin-users-permissions/server/controllers/validation/auth");
 const {
   getService,
 } = require("../../../node_modules/@strapi/plugin-users-permissions/server/utils/index");
 
-const { getAbsoluteAdminUrl, getAbsoluteServerUrl, sanitize } = utils;
-const { ApplicationError, ValidationError } = utils.errors;
+const { sanitize } = utils;
+const { ApplicationError } = utils.errors;
 
 const { getPakms } = require("../clover/utils");
+const admin = require("../../../config/admin");
 
 const sanitizeUser = (user, ctx) => {
   const { auth } = ctx.state;
@@ -28,27 +21,35 @@ const sanitizeUser = (user, ctx) => {
   return sanitize.contentAPI.output(user, userSchema, { auth });
 };
 
-const register = async (ctx) => {
-  const { firstName, lastName, email, password, merchant_id } =
+const getRoleId = async (isMember, default_role, cloveradmin) => {
+  if (!isMember) {
+    const role = await strapi
+      .query("plugin::users-permissions.role")
+      .findOne({ where: { type: default_role } });
+    if (!role) {
+      throw new ApplicationError("Impossible to find the default role");
+    }
+    return role;
+  } else {
+    const role = await strapi
+      .query("plugin::users-permissions.role")
+      .findOne({ where: { type: cloveradmin } });
+    if (!role) {
+      throw new ApplicationError("Impossible to find the default role");
+    }
+    return role;
+  }
+};
+
+const createCloverUser = async (ctx, access_token) => {
+  const { firstName, lastName, email, merchant_id, isMember } =
     ctx.request.body;
   let cloverId = null;
-  const entry = await getPakms(merchant_id);
-  if (entry.access_token) {
-    const pluginStore = await strapi.store({
-      type: "plugin",
-      name: "users-permissions",
-    });
-
-    const settings = await pluginStore.get({ key: "advanced" });
-
-    if (!settings.allow_register) {
-      throw new ApplicationError("Register action is currently disabled");
-    }
-
+  if (!isMember) {
     const headers = {
       "Content-Type": "application/json",
       accept: "application/json",
-      authorization: `Bearer ${entry.access_token}`,
+      authorization: `Bearer ${access_token}`,
     };
     const customer = {
       emailAddresses: [{ emailAddress: email }],
@@ -57,40 +58,58 @@ const register = async (ctx) => {
     };
     // @ts-ignore
     const customerRes = await axios.post(
-      `https://sandbox.dev.clover.com/v3/merchants/${merchant_id}/customers`,
+      `${CLOVER_APP_URL}/v3/merchants/${merchant_id}/customers`,
       customer,
       {
         headers: headers,
       }
     );
-    if (customerRes.data.id) {
-      cloverId = customerRes.data.id;
+    if (!customerRes.data.id) {
+      throw new ApplicationError("Check your clover credentials");
     }
-    console.log("response", customerRes.data.id);
+    return customerRes.data.id;
+  }
+  return cloverId;
+};
+const register = async (ctx) => {
+  const { firstName, lastName, email, password, merchant_id, isMember } =
+    ctx.request.body;
+
+  const entry = await getPakms(merchant_id);
+  if (entry.access_token) {
+    const pluginStore = await strapi.store({
+      type: "plugin",
+      name: "users-permissions",
+    });
+    const settings = await pluginStore.get({ key: "advanced" });
+    const cloverId = await createCloverUser(ctx, entry.access_token);
+    const role = await getRoleId(
+      isMember,
+      settings.default_role,
+      "cloveradmin"
+    );
+
+    //console.log("response", customerRes.data.id);
     const params = {
-      ..._.omit({ firstName, lastName, email, password, cloverId }, [
-        "confirmed",
-        "blocked",
-        "confirmationToken",
-        "resetPasswordToken",
-        "provider",
-        "id",
-        "createdAt",
-        "updatedAt",
-        "createdBy",
-        "updatedBy",
-        "role",
-      ]),
+      ..._.omit(
+        { firstName, lastName, email, password, cloverId, merchant_id },
+        [
+          "confirmed",
+          "blocked",
+          "confirmationToken",
+          "resetPasswordToken",
+          "provider",
+          "id",
+          "createdAt",
+          "updatedAt",
+          "createdBy",
+          "updatedBy",
+          "role",
+        ]
+      ),
       provider: "local",
     };
 
-    const role = await strapi
-      .query("plugin::users-permissions.role")
-      .findOne({ where: { type: settings.default_role } });
-
-    if (!role) {
-      throw new ApplicationError("Impossible to find the default role");
-    }
     const { provider } = params;
     const identifierFilter = {
       $or: [{ email: email.toLowerCase() }],
@@ -110,9 +129,9 @@ const register = async (ctx) => {
       email: email.toLowerCase(),
       confirmed: !settings.email_confirmation,
     };
-
     const user = await getService("user").add(newUser);
     const sanitizedUser = await sanitizeUser(user, ctx);
+    sanitizedUser["role"] = role.id;
     if (settings.email_confirmation) {
       try {
         await getService("user").sendConfirmationEmail(sanitizedUser);
@@ -132,4 +151,5 @@ const register = async (ctx) => {
   return { error: "No access token" };
 };
 
-module.exports = { register };
+const login = async (ctx) => {};
+module.exports = { register, login };
