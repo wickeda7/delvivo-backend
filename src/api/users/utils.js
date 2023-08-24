@@ -9,7 +9,7 @@ const {
 } = require("../../../node_modules/@strapi/plugin-users-permissions/server/utils/index");
 
 const { sanitize } = utils;
-const { ApplicationError } = utils.errors;
+const { ApplicationError, ValidationError } = utils.errors;
 
 const { getPakms } = require("../clover/utils");
 const admin = require("../../../config/admin");
@@ -151,5 +151,68 @@ const register = async (ctx) => {
   return { error: "No access token" };
 };
 
-const login = async (ctx) => {};
+const login = async (ctx) => {
+  const provider = ctx.params.provider || "local";
+  const params = ctx.request.body;
+
+  const store = strapi.store({ type: "plugin", name: "users-permissions" });
+  const grantSettings = await store.get({ key: "grant" });
+
+  const grantProvider = provider === "local" ? "email" : provider;
+
+  if (!_.get(grantSettings, [grantProvider, "enabled"])) {
+    throw new ApplicationError("This provider is disabled");
+  }
+
+  if (provider === "local") {
+    const { identifier, merchant_id } = params;
+
+    // Check if the user exists.
+    const user = await strapi.query("plugin::users-permissions.user").findOne({
+      populate: ["role"],
+      where: {
+        provider,
+        $or: [{ email: identifier.toLowerCase() }, { username: identifier }],
+      },
+    });
+    if (!user) {
+      throw new ValidationError("Invalid identifier or password");
+    }
+
+    if (!user.password) {
+      throw new ValidationError("Invalid identifier or password");
+    }
+    const validPassword = await getService("user").validatePassword(
+      params.password,
+      user.password
+    );
+
+    if (!validPassword) {
+      throw new ValidationError("Invalid identifier or password");
+    }
+    if (user.merchant_id != merchant_id) {
+      throw new ValidationError("Invalid merchant");
+    }
+
+    const advancedSettings = await store.get({ key: "advanced" });
+    const requiresConfirmation = _.get(advancedSettings, "email_confirmation");
+
+    if (requiresConfirmation && user.confirmed !== true) {
+      throw new ApplicationError("Your account email is not confirmed");
+    }
+
+    if (user.blocked === true) {
+      throw new ApplicationError(
+        "Your account has been blocked by an administrator"
+      );
+    }
+
+    user.roleId = user.role.id;
+    delete user.role;
+    return {
+      jwt: getService("jwt").issue({ id: user.id }),
+      user: await sanitizeUser(user, ctx),
+    };
+  }
+};
 module.exports = { register, login };
