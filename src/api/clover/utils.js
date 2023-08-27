@@ -22,6 +22,32 @@ const getAccessToken = async (code) => {
   return token.data.access_token;
 };
 
+const getMerchantName = async (merchant_id, access_token) => {
+  const headers = {
+    "Content-Type": "application/json",
+    accept: "application/json",
+    authorization: `Bearer ${access_token}`,
+  };
+  try {
+    //https://sandbox.dev.clover.com/v3/merchants/mId/?expand=owner
+    // @ts-ignore
+    const res = await axios.get(
+      `${CLOVER_APP_URL}/v3/merchants/${merchant_id}`,
+      {
+        headers: headers,
+      }
+    );
+    return res.data.name;
+  } catch (error) {
+    const { response } = error;
+    const { request, ...errorObject } = response; // take everything but 'request'
+    console.log(
+      "-----------------------getAuth ERROR--------------------------------------------"
+    );
+    console.log(errorObject.data);
+  }
+};
+
 const createPakms = async (access_token) => {
   const headers = {
     "Content-Type": "application/json",
@@ -40,6 +66,7 @@ const createPakms = async (access_token) => {
 const updateMerchantDB = async (
   type,
   merchant_id,
+  merchant_name,
   access_token,
   apiAccessKey,
   employee_id,
@@ -48,7 +75,12 @@ const updateMerchantDB = async (
   let data = { access_token, apiAccessKey };
   let entry = null;
   if (type === "update") {
-    data = { access_token, apiAccessKey, order_types: orderTypes };
+    data = {
+      merchant_name,
+      access_token,
+      apiAccessKey,
+      order_types: orderTypes,
+    };
     entry = await strapi.db
       .query("api::merchant.merchant")
       .update({ where: { merchant_id: merchant_id }, data: data });
@@ -57,6 +89,7 @@ const updateMerchantDB = async (
       access_token,
       apiAccessKey,
       merchant_id,
+      merchant_name,
       employee_id,
       client_id: CLOVER_APP_ID,
       order_types: orderTypes,
@@ -131,29 +164,32 @@ const createOrderTypes = async (access_token, merchant_id) => {
 const getAuth = async (code, employee_id, merchant_id) => {
   // https://sandbox.dev.clover.com/v3/merchants/mId/?expand=owner
   let apiAccessKey = "";
+  let merchant_name = "";
   try {
-    // create access token
+    // // create access token
     const access_token = await getAccessToken(code);
     if (access_token) {
       // create pakms api key
       apiAccessKey = await createPakms(access_token);
+      // get merchant name
+      merchant_name = await getMerchantName(merchant_id, access_token);
     }
-    // create order types
+    // // create order types
     const orderTypes = await createOrderTypes(access_token, merchant_id);
-    console.log("orderTypes", orderTypes);
-    console.log("orderTypes", JSON.stringify(orderTypes));
+
     // update merchant db
     const entry = await getPakms(merchant_id);
+    console.log("entry", entry.access_token);
     const type = entry ? "update" : "create";
     updateMerchantDB(
       type,
       merchant_id,
+      merchant_name,
       access_token,
       apiAccessKey,
       employee_id,
       JSON.stringify(orderTypes)
     );
-
     return {
       access_token,
       orderTypes,
@@ -222,22 +258,8 @@ const buildOrder = async (items, access_token, merchant_id) => {
     return errorObject.data;
   }
 };
-const orderPayment = async (order, token, access_token) => {
-  // const options = {
-  //   method: "POST",
-  //   headers: {
-  //     accept: "application/json",
-  //     "content-type": "application/json",
-  //     authorization: `Bearer ${ACCESS_TOKEN}`,
-  //   },
-  //   body: JSON.stringify({ ecomind: "ecom", source: token }),
-  // };
 
-  // fetch(`https://scl-sandbox.dev.clover.com/v1/orders/${order}/pay`, options)
-  //   .then((response) => response.json())
-  //   .then((response) => console.log(response))
-  //   .catch((err) => console.error(err));
-
+const orderPayment = async (order, token, access_token, customerInfo) => {
   const headers = {
     "Content-Type": "application/json",
     accept: "application/json",
@@ -246,8 +268,9 @@ const orderPayment = async (order, token, access_token) => {
   const body = {
     ecomind: "ecom",
     source: token,
-    ///customer: "John Doe", need to add customer info to order
-    email: "kfjsalfk@lkajsf.com",
+    //customer: customerInfo.customerId, ///response The customer does not have a Card on File. need to save customer id and transaction id to order table
+    email: customerInfo.email,
+    // customerId: customerInfo.customerId,
   };
   try {
     // @ts-ignore

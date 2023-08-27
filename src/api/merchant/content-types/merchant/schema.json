@@ -30,6 +30,15 @@
     },
     "order_types": {
       "type": "json"
+    },
+    "merchant_name": {
+      "type": "string"
+    },
+    "users": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "plugin::users-permissions.user",
+      "mappedBy": "merchant"
     }
   }
 }

@@ -75,6 +75,30 @@
     },
     "merchant_id": {
       "type": "string"
+    },
+    "merchant": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::merchant.merchant",
+      "inversedBy": "users"
+    },
+    "address": {
+      "type": "string"
+    },
+    "city": {
+      "type": "string"
+    },
+    "state": {
+      "type": "string"
+    },
+    "zip": {
+      "type": "string"
+    },
+    "orders": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::order.order",
+      "mappedBy": "customer"
     }
   }
 }

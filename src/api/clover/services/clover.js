@@ -53,7 +53,7 @@ module.exports = {
       const body = ctx.request.body;
       const card = { card: body.card };
       const merchant_id = body.merchant_id;
-
+      const customerInfo = body.customerInfo;
       const { pakms_apikey, access_token } = await getPakms(merchant_id);
 
       const token = await createCardToken(card, pakms_apikey);
@@ -68,7 +68,12 @@ module.exports = {
         "-------------------------------------------------------------------"
       );
       if (order)
-        orderInfo = await orderPayment(order.id, token.id, access_token);
+        orderInfo = await orderPayment(
+          order.id,
+          token.id,
+          access_token,
+          customerInfo
+        );
       console.log("create orderInfo", orderInfo);
       console.log(
         "-------------------------------------------------------------------"

@@ -22,7 +22,7 @@ module.exports = {
         200
       );
     } catch (err) {
-      ctx.badRequest("Post report controller error", { moreDetails: err });
+      ctx.badRequest(err);
     }
   },
   async cloverLogin(ctx, next) {
@@ -35,7 +35,7 @@ module.exports = {
         200
       );
     } catch (err) {
-      ctx.badRequest("Post report controller error", { moreDetails: err });
+      ctx.badRequest(err);
     }
   },
 };

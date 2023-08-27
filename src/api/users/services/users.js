@@ -10,9 +10,7 @@ module.exports = () => ({
       const result = await register(ctx);
       return result;
     } catch (error) {
-      const { response } = error;
-      const { request, ...errorObject } = response; // take everything but 'request'
-      return errorObject.data;
+      throw error.message;
     }
   },
   cloverLogin: async (ctx) => {
@@ -20,9 +18,11 @@ module.exports = () => ({
       const result = await login(ctx);
       return result;
     } catch (error) {
-      const { response } = error;
-      const { request, ...errorObject } = response; // take everything but 'request'
-      return errorObject.data;
+      throw error.message;
+      // console.log("error", error.message);
+      // const { response } = error;
+      // const { request, ...errorObject } = response; // take everything but 'request'
+      // return errorObject.data;
     }
   },
 });
