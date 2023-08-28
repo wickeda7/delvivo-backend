@@ -1,14 +1,14 @@
 module.exports = {
   routes: [
-    // {
-    //  method: 'GET',
-    //  path: '/users',
-    //  handler: 'users.exampleAction',
-    //  config: {
-    //    policies: [],
-    //    middlewares: [],
-    //  },
-    // },
+    {
+      method: "GET",
+      path: "/users/:customerId/:merchantId/:accessToken",
+      handler: "users.getUser",
+      config: {
+        policies: [],
+        middlewares: [],
+      },
+    },
     {
       // Path defined with an URL parameter
       method: "POST",

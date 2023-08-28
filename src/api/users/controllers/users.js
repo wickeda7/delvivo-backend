@@ -5,13 +5,22 @@
  */
 
 module.exports = {
-  // exampleAction: async (ctx, next) => {
-  //   try {
-  //     ctx.body = 'ok';
-  //   } catch (err) {
-  //     ctx.body = err;
-  //   }
-  // },
+  getUser: async (ctx, next) => {
+    try {
+      const data = await strapi.service("api::users.users").getUser(ctx, next);
+      if (data.error) {
+        throw new Error(data.error);
+      }
+      ctx.send(
+        {
+          data,
+        },
+        200
+      );
+    } catch (err) {
+      ctx.badRequest(err.message);
+    }
+  },
   async cloverRegister(ctx, next) {
     try {
       const data = await strapi.service("api::users.users").cloverRegister(ctx);

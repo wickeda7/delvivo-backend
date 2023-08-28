@@ -269,4 +269,56 @@ const login = async (ctx) => {
     };
   }
 };
-module.exports = { register, login };
+const getUser = async (ctx, next) => {
+  const { customerId, merchantId, accessToken } = ctx.params;
+  const headers = {
+    "Content-Type": "application/json",
+    accept: "application/json",
+    authorization: `Bearer ${accessToken}`,
+  };
+  try {
+    // @ts-ignore
+    const res = await axios.get(
+      `${CLOVER_APP_URL}/v3/merchants/${merchantId}/customers/${customerId}?expand=addresses`,
+      {
+        headers: headers,
+      }
+    );
+    if (res.data.addresses) {
+      const userData = await userDb(res.data);
+      return userData;
+    }
+  } catch (error) {
+    if (error.message) {
+      return { error: error.message };
+    }
+    const { response } = error;
+    const { request, ...errorObject } = response; // take everything but 'request'
+    return { error: errorObject.data };
+  }
+};
+const userDb = async (data) => {
+  const {
+    id,
+    addresses: { elements },
+  } = data;
+
+  try {
+    const user = await strapi
+      .query("plugin::users-permissions.user")
+      .findOne({ where: { cloverId: id } });
+    if (!user) {
+      throw new ApplicationError("User not found");
+    }
+    const entry = await getService("user").edit(user.id, {
+      address: elements[0].address1,
+      city: elements[0].city,
+      state: elements[0].state,
+      zip: elements[0].zip,
+    });
+    return entry;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+module.exports = { register, login, getUser };
