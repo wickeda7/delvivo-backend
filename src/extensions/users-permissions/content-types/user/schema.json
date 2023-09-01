@@ -64,9 +64,6 @@
       "inversedBy": "users",
       "configurable": false
     },
-    "cloverId": {
-      "type": "string"
-    },
     "firstName": {
       "type": "string"
     },
@@ -94,11 +91,14 @@
     "zip": {
       "type": "string"
     },
+    "phoneNumber": {
+      "type": "string"
+    },
     "orders": {
       "type": "relation",
       "relation": "oneToMany",
       "target": "api::order.order",
-      "mappedBy": "customer"
+      "mappedBy": "user"
     }
   }
 }

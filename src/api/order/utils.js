@@ -3,48 +3,90 @@ require("dotenv").config();
 const axios = require("axios");
 const utils = require("@strapi/utils");
 const CLOVER_APP_URL = process.env.CLOVER_APP_URL;
+const { readFile, writeFile } = require("./test");
+const fs = require("fs");
 
 const { ApplicationError } = utils.errors;
+
 const getCloverOrders = async (ctx) => {
-  console.log("ctx", ctx.params);
-  const axios = require("axios");
-  const from = "clientCreatedTime<1693119599000";
-  const to = "clientCreatedTime>1692514800000";
-  const expand = "payments,lineItems,orderType,credits,customers";
+  const { from, to, merchantId, accesToken } = ctx.params;
+
+  /// cloverId 3SMH16F5SHHRA
+  const expand = "payments,lineItems,orderType,credits,customers"; //  from: '1693033200000' 26, to: ''1693206000000'',
   const options = {
     method: "GET",
-    url: `https://sandbox.dev.clover.com/v3/merchants/M04E9FZBWVB71/orders?filter=${from}&filter=${to}&expand=${expand}`,
+    url: `https://sandbox.dev.clover.com/v3/merchants/${merchantId}/orders?filter=clientCreatedTime>${from}&filter=clientCreatedTime<${to}&expand=${expand}`,
     headers: {
       accept: "application/json",
-      authorization: "Bearer 645ba9d6-9cf7-4b0c-3785-6f8fb109779b",
+      authorization: `Bearer ${accesToken}`,
     },
   };
   try {
     // @ts-ignore
     const result = await axios.request(options);
-    //console.log("result", result.data);
-    return result.data;
+    let data = result.data.elements;
+    // user id = 54 relation with customer field in orders table
+    console.log("data", data);
+    let paidOrders = data.reduce(
+      function (accumulator, curValue) {
+        if (curValue.paymentState === "PAID") {
+          let order = {
+            cloverId: "3SMH16F5SHHRA", // temp for testing only get it from title field later
+            created: curValue.createdTime,
+            customer: "Hung Test",
+            orderId: curValue.id,
+            merchant_id: merchantId,
+            orderContent: JSON.stringify(curValue),
+            user: 54,
+          };
+          let item = {
+            orderId: curValue.id,
+            lineItems: curValue.lineItems.elements,
+          };
+          if (accumulator) {
+            accumulator.orders.push(order);
+            accumulator.items.push(item);
+          }
+        }
+        return accumulator;
+      },
+      { orders: [], items: [] }
+    );
+
+    //const paidOrders = readFile("./test.json");
+    console.log("paidOrders", paidOrders);
+    if (paidOrders.orders.length > 0) {
+      const orderRes = await addOrderBulk(paidOrders.orders, "create"); /// add orders to db
+      const itemRes = await getItemsBulk(
+        paidOrders.items,
+        accesToken,
+        merchantId
+      );
+    }
+
+    return;
   } catch (error) {
     console.log(error);
   }
-
-  //   axios
-  //     .request(options)
-  //     .then(function (response) {
-  //       //console.log(response.data);
-  //       return response.data;
-  //     })
-  //     .catch(function (error) {
-  //       console.error(error);
-  //     });
 };
-
+const addOrderBulk = async (data, type) => {
+  try {
+    if (type === "update") {
+      return await strapi.db.query("api::order.order").updateMany(data);
+    } else {
+      return await strapi.db.query("api::order.order").createMany({ data });
+    }
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
 const addOrder = async (body) => {
   if (body.order) {
     const {
       order: { cloverId, id, created, items },
     } = body;
     const data = {
+      // maybe add customer id here
       cloverId,
       created,
       orderId: id,
@@ -72,21 +114,62 @@ const addOrder = async (body) => {
     }
   }
 };
-const getItems = async (entryId, items, access_token, merchant_id) => {
-  const ids = items.map(({ inventory_id }) => inventory_id);
+const getItemsBulk = async (items, accesToken, merchantId) => {
+  let totalItemIds = []; // get total item ids to get details from clover
 
+  const data = items.reduce((accumulator, curValue) => {
+    const ids = curValue.lineItems.reduce((acc, val) => {
+      return acc.concat(val.item.id);
+    }, []);
+    totalItemIds = totalItemIds.concat(ids);
+    return accumulator.concat({ orderid: curValue.orderId, itemIds: ids });
+  }, []);
+  //
+  const res = await getCloverItems(totalItemIds, accesToken, merchantId);
+  // console.log("res", res.data);
+  if (res.data) {
+    //writeFile("./test2.json",res.data);
+    const itemsData = res.data.elements.reduce((accumulator, curValue) => {
+      accumulator[curValue.id] = curValue;
+      return accumulator;
+    }, []);
+    for (var item of data) {
+      let params = {};
+      //let elements = [];
+      const orderId = item.orderid;
+      params.where = { orderId };
+      const elements = item.itemIds.reduce((acc, val) => {
+        acc.push(itemsData[val]);
+        return acc;
+      }, []);
+      params.data = {
+        itemContent: JSON.stringify(elements),
+      };
+      const res = await addOrderBulk(params, "update");
+      console.log("res", res);
+    }
+  }
+  // const itemsRes = readFile("./test2.json");
+
+  // console.log("data", data);
+  // console.log("itemsData", itemsData);
+};
+const getCloverItems = async (ids, access_token, merchant_id) => {
   const headers = {
     "Content-Type": "application/json",
     accept: "application/json",
     authorization: `Bearer ${access_token}`,
   };
-  try {
-    const idsMap = ids
-      .map(function (item) {
-        return "'" + item + "'";
-      })
-      .join(",");
 
+  // @ts-ignore
+  let itemIds = [...new Set(ids)]; // remove duplicate ids
+  const idsMap = itemIds
+    .map(function (item) {
+      return "'" + item + "'";
+    })
+    .join(",");
+
+  try {
     //@ts-ignore
     const res = await axios.get(
       `${CLOVER_APP_URL}/v3/merchants/${merchant_id}/items?filter=item.id in (${idsMap})&expand=menuItem`,
@@ -94,15 +177,19 @@ const getItems = async (entryId, items, access_token, merchant_id) => {
         headers: headers,
       }
     );
-
-    if (res.data) {
-      addOrder({ items: res.data, entryId });
-    }
+    return res;
   } catch (error) {
     const { response } = error;
     const { request, ...errorObject } = response; // take everything but 'request'
 
     throw new Error(errorObject.data.message);
+  }
+};
+const getItems = async (entryId, items, access_token, merchant_id) => {
+  const ids = items.map(({ inventory_id }) => inventory_id);
+  const res = await getCloverItems(ids, access_token, merchant_id);
+  if (res.data) {
+    addOrder({ items: res.data, entryId });
   }
 };
 
