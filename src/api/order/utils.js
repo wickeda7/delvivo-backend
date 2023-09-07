@@ -3,7 +3,7 @@ require("dotenv").config();
 const axios = require("axios");
 const utils = require("@strapi/utils");
 const CLOVER_APP_URL = process.env.CLOVER_APP_URL;
-const { readFile, writeFile } = require("./test");
+//const { readFile, writeFile } = require("./test");
 const fs = require("fs");
 
 const { ApplicationError } = utils.errors;
