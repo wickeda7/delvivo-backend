@@ -45,12 +45,6 @@
     "available": {
       "type": "boolean"
     },
-    "orders": {
-      "type": "relation",
-      "relation": "oneToMany",
-      "target": "api::order.order",
-      "mappedBy": "driver"
-    },
     "color": {
       "type": "string"
     },
@@ -71,6 +65,12 @@
     },
     "carImg": {
       "type": "string"
+    },
+    "orders": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::order.order",
+      "mappedBy": "driver"
     }
   }
 }

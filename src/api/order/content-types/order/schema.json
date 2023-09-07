@@ -39,12 +39,6 @@
     "merchant_id": {
       "type": "string"
     },
-    "user": {
-      "type": "relation",
-      "relation": "manyToOne",
-      "target": "plugin::users-permissions.user",
-      "inversedBy": "orders"
-    },
     "cloverId": {
       "type": "string"
     },
@@ -52,6 +46,12 @@
       "type": "relation",
       "relation": "manyToOne",
       "target": "api::driver.driver",
+      "inversedBy": "orders"
+    },
+    "user": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::users-permissions.user",
       "inversedBy": "orders"
     }
   }

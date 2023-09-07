@@ -30,6 +30,7 @@ const getCloverOrders = async (ctx) => {
     let paidOrders = data.reduce(
       function (accumulator, curValue) {
         if (curValue.paymentState === "PAID") {
+          const connect = { id: 54 };
           let order = {
             cloverId: "3SMH16F5SHHRA", // temp for testing only get it from title field later
             created: curValue.createdTime,
@@ -37,7 +38,7 @@ const getCloverOrders = async (ctx) => {
             orderId: curValue.id,
             merchant_id: merchantId,
             orderContent: JSON.stringify(curValue),
-            user: 54,
+            user: connect,
           };
           let item = {
             orderId: curValue.id,
