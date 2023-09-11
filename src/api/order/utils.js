@@ -84,13 +84,15 @@ const addOrderBulk = async (data, type) => {
 const addOrder = async (body) => {
   if (body.order) {
     const {
-      order: { cloverId, id, created, items },
+      order: { userId, cloverId, id, created, items },
     } = body;
+    const connect = { id: userId };
     const data = {
       // maybe add customer id here
       cloverId,
       created,
       orderId: id,
+      user: connect,
       merchant_id: body.merchant_id,
       orderContent: JSON.stringify(body.order),
     };
@@ -194,4 +196,11 @@ const getItems = async (entryId, items, access_token, merchant_id) => {
   }
 };
 
-module.exports = { getCloverOrders, addOrder };
+const formatPrice = (number) => {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+  }).format(number / 100);
+};
+
+module.exports = { getCloverOrders, addOrder, formatPrice };

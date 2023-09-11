@@ -16,7 +16,7 @@
       "type": "string"
     },
     "created": {
-      "type": "datetime"
+      "type": "date"
     },
     "status": {
       "type": "string"

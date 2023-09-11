@@ -57,10 +57,10 @@ module.exports = {
       const { pakms_apikey, access_token } = await getPakms(merchant_id);
 
       const token = await createCardToken(card, pakms_apikey);
-      console.log("create token", token);
-      console.log(
-        "-------------------------------------------------------------------"
-      );
+      // console.log("create token", token);
+      // console.log(
+      //   "-------------------------------------------------------------------"
+      // );
       if (token)
         order = await buildOrder(body.orderCart, access_token, merchant_id);
       console.log("create order", order);
@@ -74,10 +74,13 @@ module.exports = {
           access_token,
           customerInfo
         );
-      console.log("create orderInfo", orderInfo);
-      console.log(
-        "-------------------------------------------------------------------"
-      );
+      // console.log("create orderInfo", orderInfo);
+      // console.log(
+      //   "-------------------------------------------------------------------"
+      // );
+      if (orderInfo) {
+        orderInfo["createdOrders"] = order;
+      }
       return orderInfo;
     } catch (err) {
       return err;

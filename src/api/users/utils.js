@@ -2,6 +2,7 @@ require("dotenv").config();
 const axios = require("axios");
 const utils = require("@strapi/utils");
 const _ = require("lodash");
+
 const CLOVER_APP_URL = process.env.CLOVER_APP_URL;
 
 const {
@@ -14,6 +15,9 @@ const { ApplicationError, ValidationError } = utils.errors;
 const { getPakms } = require("../clover/utils");
 const admin = require("../../../config/admin");
 
+const { resOrder, entry } = require("./testOrder");
+const sendEmail = require("../order/email/sendEmail");
+
 const sanitizeUser = (user, ctx) => {
   const { auth } = ctx.state;
   const userSchema = strapi.getModel("plugin::users-permissions.user");
@@ -21,6 +25,14 @@ const sanitizeUser = (user, ctx) => {
   return sanitize.contentAPI.output(user, userSchema, { auth });
 };
 
+const testEmail = async (email) => {
+  try {
+    await sendEmail({ type: "new", resOrder, entry });
+    return { message: "success" };
+  } catch (error) {
+    console.log(error);
+  }
+};
 const getRoleId = async (isMember, default_role, cloveradmin) => {
   let role = null;
   if (!isMember) {
@@ -108,6 +120,7 @@ const register = async (ctx) => {
     email,
     password,
     merchant_id,
+    phoneNumber,
     isMember,
     address,
     city,
@@ -136,6 +149,7 @@ const register = async (ctx) => {
           email,
           password,
           cloverId,
+          phoneNumber,
           merchant_id,
           address,
           city,
@@ -321,4 +335,4 @@ const userDb = async (data) => {
     throw new Error(error.message);
   }
 };
-module.exports = { register, login, getUser };
+module.exports = { register, login, getUser, testEmail };

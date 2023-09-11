@@ -1,5 +1,5 @@
 "use strict";
-const { register, login, getUser } = require("../utils");
+const { register, login, getUser, testEmail } = require("../utils");
 /**
  * users service
  */
@@ -28,14 +28,11 @@ module.exports = () => ({
   cloverLogin: async (ctx) => {
     try {
       const result = await login(ctx);
+      //const result = await testEmail(ctx);
 
       return result;
     } catch (error) {
       throw error.message;
-      // console.log("error", error.message);
-      // const { response } = error;
-      // const { request, ...errorObject } = response; // take everything but 'request'
-      // return errorObject.data;
     }
   },
 });

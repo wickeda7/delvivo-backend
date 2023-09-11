@@ -99,6 +99,9 @@
       "relation": "oneToMany",
       "target": "api::order.order",
       "mappedBy": "user"
+    },
+    "cloverId": {
+      "type": "string"
     }
   }
 }
