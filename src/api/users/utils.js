@@ -335,4 +335,4 @@ const userDb = async (data) => {
     throw new Error(error.message);
   }
 };
-module.exports = { register, login, getUser, testEmail };
+module.exports = { register, login, getUser };
