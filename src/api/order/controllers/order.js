@@ -56,4 +56,17 @@ module.exports = createCoreController("api::order.order", ({ strapi }) => ({
       ctx.badRequest(error.message, { moreDetails: error });
     }
   },
+  sendemail: async (ctx, next) => {
+    try {
+      const data = await strapi.service("api::order.order").sendemail(ctx);
+      ctx.send(
+        {
+          data,
+        },
+        200
+      );
+    } catch (error) {
+      ctx.badRequest(error.message, { moreDetails: error });
+    }
+  },
 }));

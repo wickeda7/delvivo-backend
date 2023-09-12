@@ -5,6 +5,7 @@ module.exports = {
       result: { id, orderId, created, orderContent },
     } = event;
     const order = JSON.parse(orderContent);
+    console.log("order", order);
     setTimeout(async () => {
       const entry = await strapi.entityService.findOne("api::order.order", id, {
         fields: ["itemContent"],

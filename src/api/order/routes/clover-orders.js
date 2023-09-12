@@ -17,5 +17,10 @@ module.exports = {
       path: "/orders",
       handler: "order.postOrders",
     },
+    {
+      method: "POST",
+      path: "/orders/sendemail",
+      handler: "order.sendemail",
+    },
   ],
 };

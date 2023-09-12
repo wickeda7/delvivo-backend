@@ -28,17 +28,39 @@ const htmlTemplate = (data) => {
       user: { lastName, firstName, email, address, city, state, zip },
     },
   } = data;
+
+  let confirmData = {};
   const name = firstName + " " + lastName;
   const dateObject = new Date(created);
   const date = dateObject.toLocaleString();
-  const confirmData = {
-    name: name,
-    oderId: id,
-    date,
-  };
+  if (data.resOrder.type) {
+    const title = data.resOrder.isPickup
+      ? "Your order is ready!"
+      : "Your order is on the way!";
+    const message1 = data.resOrder.isPickup
+      ? "You may pick up your order at any time."
+      : "Please expect your order to arrive soon.";
+    confirmData = {
+      name: name,
+      oderId: id,
+      date,
+      title: title,
+      message1: message1,
+      message2: "",
+    };
+  } else {
+    confirmData = {
+      name: name,
+      oderId: id,
+      date,
+      title: "Order Confirmed",
+      message1: "We've got your order!",
+      message2: "We'll drop you another email when your order is ready.",
+    };
+  }
   const confirm = templateConfirm(confirmData);
-
   const lineItems = JSON.parse(itemContent).elements;
+
   const orderItems = items.reduce((acc, item) => {
     const { parent, amount, quantity, description } = item;
     const lineItem = lineItems.find((item) => item.id === parent);
