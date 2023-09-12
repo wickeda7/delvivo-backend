@@ -15,7 +15,7 @@ const { ApplicationError, ValidationError } = utils.errors;
 const { getPakms } = require("../clover/utils");
 const admin = require("../../../config/admin");
 
-const { resOrder, entry } = require("./testOrder");
+///./testOrderconst { resOrder, entry } = require("./testOrder");
 const sendEmail = require("../order/email/sendEmail");
 
 const sanitizeUser = (user, ctx) => {
@@ -25,14 +25,14 @@ const sanitizeUser = (user, ctx) => {
   return sanitize.contentAPI.output(user, userSchema, { auth });
 };
 
-const testEmail = async (email) => {
-  try {
-    await sendEmail({ type: "new", resOrder, entry });
-    return { message: "success" };
-  } catch (error) {
-    console.log(error);
-  }
-};
+// const testEmail = async (email) => {
+//   try {
+//     await sendEmail({ type: "new", resOrder, entry });
+//     return { message: "success" };
+//   } catch (error) {
+//     console.log(error);
+//   }
+// };
 const getRoleId = async (isMember, default_role, cloveradmin) => {
   let role = null;
   if (!isMember) {
