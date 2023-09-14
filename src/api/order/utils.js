@@ -37,7 +37,7 @@ const getCloverOrders = async (ctx) => {
             customer: "Hung Test",
             orderId: curValue.id,
             merchant_id: merchantId,
-            orderContent: JSON.stringify(curValue),
+            order_content: JSON.stringify(curValue),
             user: connect,
           };
           let item = {
@@ -83,7 +83,7 @@ const addOrderBulk = async (data, type) => {
 };
 const addOrder = async (body) => {
   // console.log("body", body);
-  console.log("typeof orderContent", typeof body.order, body.order);
+  //console.log("typeof orderContent", typeof body.order, body.order);
   if (body.order) {
     const {
       order: { userId, cloverId, id, created, items },
@@ -96,7 +96,7 @@ const addOrder = async (body) => {
       orderId: id,
       user: connect,
       merchant_id: body.merchant_id,
-      orderContent: JSON.stringify(body.order),
+      order_content: JSON.stringify(body.order),
     };
     // console.log("data", data);
     //
