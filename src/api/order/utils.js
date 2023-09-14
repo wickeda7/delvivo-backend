@@ -96,6 +96,8 @@ const addOrder = async (body) => {
       merchant_id: body.merchant_id,
       orderContent: JSON.stringify(body.order),
     };
+    console.log("data", data);
+    console.log("typeof orderContent", typeof data.orderContent);
     const entry = await strapi.db
       .query("api::order.order")
       .create({ data: data });
