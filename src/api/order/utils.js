@@ -83,6 +83,7 @@ const addOrderBulk = async (data, type) => {
 };
 const addOrder = async (body) => {
   // console.log("body", body);
+  console.log("typeof orderContent", typeof body.order, body.order);
   if (body.order) {
     const {
       order: { userId, cloverId, id, created, items },
@@ -98,7 +99,7 @@ const addOrder = async (body) => {
       orderContent: JSON.stringify(body.order),
     };
     // console.log("data", data);
-    // console.log("typeof orderContent", typeof data.orderContent);
+    //
     const entry = await strapi.db
       .query("api::order.order")
       .create({ data: data });
