@@ -1,8 +1,8 @@
 const sendEmail = require("../../email/sendEmail");
 module.exports = {
-  async beforeCreate(ctx, next) {
-    console.log("beforeCreate event", ctx.request.body);
-  },
+  // async beforeCreate(ctx, next) {
+  //   console.log("beforeCreate event", ctx.request.body);
+  // },
   async afterCreate(event, options) {
     let order = {};
     const {
