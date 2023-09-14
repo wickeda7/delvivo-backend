@@ -230,7 +230,7 @@ const createCardToken = async (card, pakms_apikey) => {
 
 const buildOrder = async (items, access_token, merchant_id) => {
   const body = { orderCart: items };
-  console.log("body", body.orderCart.lineItems);
+  //console.log("body", body.orderCart.lineItems);
   const headers = {
     "Content-Type": "application/json",
     accept: "application/json",

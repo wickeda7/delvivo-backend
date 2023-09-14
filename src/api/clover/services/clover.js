@@ -63,10 +63,10 @@ module.exports = {
       // );
       if (token)
         order = await buildOrder(body.orderCart, access_token, merchant_id);
-      console.log("create order", order);
-      console.log(
-        "-------------------------------------------------------------------"
-      );
+      // console.log("create order", order);
+      // console.log(
+      //   "-------------------------------------------------------------------"
+      // );
       if (order)
         orderInfo = await orderPayment(
           order.id,
