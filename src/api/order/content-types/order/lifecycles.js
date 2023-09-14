@@ -1,15 +1,20 @@
 const sendEmail = require("../../email/sendEmail");
 module.exports = {
   async beforeCreate(ctx, next) {
-    console.log("beforeCreate event", ctx.data);
+    console.log("beforeCreate event", ctx.request.body);
   },
   async afterCreate(event, options) {
+    let order = {};
     const {
       result: { id, orderId, created, order_content },
     } = event;
     console.log("Order id", typeof order_content, order_content);
-    const order = JSON.parse(order_content);
-    console.log("order", order);
+    if (typeof order_content === "object") {
+      order = order_content;
+    } else {
+      order = JSON.parse(order_content);
+    }
+
     setTimeout(async () => {
       const entry = await strapi.entityService.findOne("api::order.order", id, {
         fields: ["itemContent"],
