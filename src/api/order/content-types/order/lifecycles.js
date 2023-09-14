@@ -7,6 +7,7 @@ module.exports = {
     const {
       result: { id, orderId, created, order_content },
     } = event;
+    console.log("Order id", typeof order_content, order_content);
     const order = JSON.parse(order_content);
     console.log("order", order);
     setTimeout(async () => {
