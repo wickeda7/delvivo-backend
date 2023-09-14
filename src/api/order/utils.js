@@ -82,6 +82,7 @@ const addOrderBulk = async (data, type) => {
   }
 };
 const addOrder = async (body) => {
+  console.log("body", body);
   if (body.order) {
     const {
       order: { userId, cloverId, id, created, items },
