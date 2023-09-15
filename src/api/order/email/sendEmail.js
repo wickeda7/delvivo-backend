@@ -30,8 +30,10 @@ const sendEmail = async (ctx) => {
         user: _.pick(user, ["subject", "email"]),
       }
     );
+    console.log("email sent");
     return { status: "success" };
   } catch (error) {
+    console.log("error", error);
     return { message: "error", error };
   }
 };

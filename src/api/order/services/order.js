@@ -63,6 +63,7 @@ module.exports = createCoreService("api::order.order", ({ strapi }) => ({
         ...order_content,
       };
       const data = await sendEmail(newOrder);
+      console.log("sendEmail", data);
       if (data.status === "success") {
         try {
           await strapi.entityService.update("api::order.order", order.id, {
