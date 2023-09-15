@@ -18,6 +18,7 @@ const sendEmail = async (ctx) => {
     email: resOrder.email,
     subject,
   };
+  console.log("start");
   const orderTemplate = htmlTemplate({ resOrder, entry });
   try {
     await strapi.plugins["email"].services.email.sendTemplatedEmail(
