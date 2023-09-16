@@ -39,6 +39,9 @@
       "relation": "oneToMany",
       "target": "plugin::users-permissions.user",
       "mappedBy": "merchant"
+    },
+    "notify_email": {
+      "type": "email"
     }
   }
 }

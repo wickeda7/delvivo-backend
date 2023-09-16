@@ -18,9 +18,7 @@ const sendEmail = async (ctx) => {
     email: resOrder.email,
     subject,
   };
-  console.log("start");
 
-  console.log("orderTemplate");
   try {
     const orderTemplate = htmlTemplate({ resOrder, entry });
     await strapi.plugins["email"].services.email.sendTemplatedEmail(
@@ -33,7 +31,6 @@ const sendEmail = async (ctx) => {
         user: _.pick(user, ["subject", "email"]),
       }
     );
-    console.log("email sent");
     return { status: "success" };
   } catch (error) {
     console.log("error", error);

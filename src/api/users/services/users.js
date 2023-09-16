@@ -1,5 +1,5 @@
 "use strict";
-const { register, login, getUser, testEmail } = require("../utils");
+const { register, login, getUser } = require("../utils");
 /**
  * users service
  */
