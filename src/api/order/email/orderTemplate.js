@@ -59,7 +59,12 @@ const htmlTemplate = (data) => {
     };
   }
   const confirm = templateConfirm(confirmData);
-  const lineItems = JSON.parse(itemContent).elements;
+  let lineItems = [];
+  if (typeof itemContent === "object") {
+    lineItems = itemContent.elements;
+  } else {
+    lineItems = JSON.parse(itemContent).elements;
+  }
 
   const orderItems = items.reduce((acc, item) => {
     const { parent, amount, quantity, description } = item;
