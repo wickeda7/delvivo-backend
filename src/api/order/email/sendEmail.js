@@ -1,12 +1,12 @@
 const { htmlTemplate } = require("./orderTemplate");
 const _ = require("lodash");
 
-const sendEmail = async (ctx) => {
+const sendCustomerEmail = async (ctx) => {
   const { resOrder, entry, type } = ctx;
 
   let subject = "";
   if (type === "new") {
-    subject = "New Order";
+    subject = "New Order from Delvivo";
   } else {
     resOrder["type"] = type;
     subject = resOrder.isPickup
@@ -37,4 +37,25 @@ const sendEmail = async (ctx) => {
     return { message: "error", error };
   }
 };
-module.exports = sendEmail;
+const sendMerchantEmail = async (orderId, merchant_id, createdAt, order) => {
+  const daten = new Date(createdAt);
+  const date = daten.toLocaleDateString();
+  const time = daten.toLocaleTimeString();
+  const subject = `New Order at ${time} on ${date}`;
+  const text = `New order #${orderId} on ${date} at ${time} ${order.createdOrders.note}`;
+  const entry = await strapi.db.query("api::merchant.merchant").findOne({
+    where: { merchant_id: merchant_id },
+  });
+  const { notify_email } = entry;
+  try {
+    await strapi.plugins["email"].services.email.send({
+      to: notify_email,
+      subject: subject,
+      text: text, // Replace with a valid field ID
+      // html: 'Hello world!',
+    });
+  } catch (err) {
+    console.log(err);
+  }
+};
+module.exports = { sendCustomerEmail, sendMerchantEmail };

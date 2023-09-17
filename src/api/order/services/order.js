@@ -1,7 +1,7 @@
 "use strict";
 
 const { addOrder, getCloverOrders } = require("../utils");
-const sendEmail = require("../email/sendEmail");
+const { sendCustomerEmail } = require("../email/sendEmail");
 /**
  * order service
  */
@@ -62,7 +62,7 @@ module.exports = createCoreService("api::order.order", ({ strapi }) => ({
         ...order,
         ...order_content,
       };
-      const data = await sendEmail(newOrder);
+      const data = await sendCustomerEmail(newOrder);
       console.log("sendEmail", data);
       if (data.status === "success") {
         try {

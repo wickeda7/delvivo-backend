@@ -15,8 +15,11 @@ const { ApplicationError, ValidationError } = utils.errors;
 const { getPakms } = require("../clover/utils");
 const admin = require("../../../config/admin");
 
-///./testOrderconst { resOrder, entry } = require("./testOrder");
-const sendEmail = require("../order/email/sendEmail");
+//const { Order } = require("./testOrder");
+const {
+  sendCustomerEmail,
+  sendMerchantEmail,
+} = require("../order/email/sendEmail");
 
 const sanitizeUser = (user, ctx) => {
   const { auth } = ctx.state;
@@ -26,8 +29,11 @@ const sanitizeUser = (user, ctx) => {
 };
 
 // const testEmail = async (email) => {
+//   const orderId = "SPJAW4PNKVZAG";
+//   const merchant_id = "M04E9FZBWVB71";
+//   const createdAt = "2023-09-17T06:15:37.909Z";
 //   try {
-//     await sendEmail({ type: "new", resOrder, entry });
+//     await sendMerchantEmail(orderId, merchant_id, createdAt, Order);
 //     return { message: "success" };
 //   } catch (error) {
 //     console.log(error);

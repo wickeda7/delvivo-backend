@@ -1,28 +1,30 @@
-const sendEmail = require("../../email/sendEmail");
+const {
+  sendCustomerEmail,
+  sendMerchantEmail,
+} = require("../../email/sendEmail");
 module.exports = {
-  // async beforeCreate(ctx, next) {
-  //   console.log("beforeCreate event", ctx.request.body);
-  // },
   async afterCreate(event, options) {
     let order = {};
     const {
-      result: { id, orderId, created, order_content },
+      result: { id, orderId, merchant_id, createdAt, order_content },
     } = event;
-    console.log("Order id", typeof order_content, order_content);
     if (typeof order_content === "object") {
       order = order_content;
     } else {
       order = JSON.parse(order_content);
     }
-
+    try {
+      await sendMerchantEmail(orderId, merchant_id, createdAt, order);
+    } catch (error) {
+      console.log(error);
+    }
     setTimeout(async () => {
       const entry = await strapi.entityService.findOne("api::order.order", id, {
         fields: ["itemContent"],
         populate: ["user"],
       });
-      console.log("Entry", entry);
       try {
-        await sendEmail({ type: "new", resOrder: order, entry });
+        await sendCustomerEmail({ type: "new", resOrder: order, entry });
       } catch (error) {
         console.log(error);
       }
