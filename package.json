@@ -21,7 +21,9 @@
     "better-sqlite3": "8.0.1",
     "clover-ecomm-sdk": "^1.0.0",
     "pg": "^8.11.3",
-    "pg-connection-string": "^2.6.2"
+    "pg-connection-string": "^2.6.2",
+    "socket.io": "^4.7.2",
+    "strapio": "^3.0.2"
   },
   "author": {
     "name": "A Strapi developer"

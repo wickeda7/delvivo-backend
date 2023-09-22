@@ -37,6 +37,8 @@ module.exports = {
   async cloverLogin(ctx, next) {
     try {
       const data = await strapi.service("api::users.users").cloverLogin(ctx);
+      // @ts-ignore
+      strapi.ioServer.emit("test", "test message");
       ctx.send(
         {
           data,

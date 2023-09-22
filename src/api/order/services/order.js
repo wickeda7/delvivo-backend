@@ -2,6 +2,7 @@
 
 const { addOrder, getCloverOrders } = require("../utils");
 const { sendCustomerEmail } = require("../email/sendEmail");
+const e = require("cors");
 /**
  * order service
  */
@@ -10,17 +11,45 @@ const { createCoreService } = require("@strapi/strapi").factories;
 
 module.exports = createCoreService("api::order.order", ({ strapi }) => ({
   storeOrders: async (ctx, next) => {
-    const { created } = ctx.request.query;
+    const { type } = ctx.request.query;
     // console.log("ctx.createCoreSeorderrvice", created); //api::order.order  2023-08-29T00:00:00.000Z  2023-08-29T23:59:00.000Z
-    const am = `${created}`;
-    const pm = `${created}`;
+    //const am = `${created}`;
+    // const pm = `${created}`;
+    const todayDate = new Date().toISOString().slice(0, 10);
     try {
       const entries = await strapi.entityService.findMany("api::order.order", {
         filters: {
-          created: { $eq: am },
+          created: { $eq: todayDate },
         },
         populate: "*", //customer
       });
+      if (type) {
+        const res = entries.reduce((acc, cur) => {
+          const { id, orderId, createdAt, itemContent, order_content, user } =
+            cur;
+          let content =
+            typeof order_content === "object"
+              ? order_content
+              : JSON.parse(order_content);
+          if (content.geometry) {
+            let items =
+              typeof itemContent === "object"
+                ? itemContent
+                : JSON.parse(itemContent);
+            acc.push({
+              id,
+              orderId,
+              createdAt,
+              itemContent: items,
+              order_content: content,
+              user,
+            });
+          }
+
+          return acc;
+        }, []);
+        return res;
+      }
       return entries;
     } catch (error) {
       throw new Error(error.message);

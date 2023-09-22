@@ -1,5 +1,7 @@
-'use strict';
+"use strict";
 
+require("dotenv").config();
+const HOST_URL = process.env.HOST_URL;
 module.exports = {
   /**
    * An asynchronous register function that runs before
@@ -16,5 +18,21 @@ module.exports = {
    * This gives you an opportunity to set up your data model,
    * run jobs, or perform some special logic.
    */
-  bootstrap(/*{ strapi }*/) {},
+  bootstrap({ strapi }) {
+    //strapi.server.httpServer is the new update for Strapi V4
+    // @ts-ignore
+    process.nextTick(() => {
+      // @ts-ignore
+      strapi.ioServer = require("socket.io")(strapi.server.httpServer, {
+        cors: {
+          // cors setup
+          "Allow-Origin": HOST_URL,
+          methods: ["GET", "POST"],
+          allowedHeaders: ["my-custom-header"],
+          credentials: true,
+        },
+      });
+      //strapi.services.ioServer = ioServer; // register socket io inside strapi main object to use it globally anywhere
+    });
+  },
 };

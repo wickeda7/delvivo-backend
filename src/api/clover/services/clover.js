@@ -35,10 +35,17 @@ module.exports = {
     const body = ctx.request.body;
     try {
       // @ts-ignore
-      const result = await axios.get(
-        `${GOOGLE_URL}/maps/api/distancematrix/json?key=${GOOGLE_MAPS_API_KEY}&origins=${body.origins}&destinations=${body.destinations}&units=imperial`
+      const res = await axios.get(
+        `${GOOGLE_URL}/maps/api/geocode/json?key=${GOOGLE_MAPS_API_KEY}&address=${body.destinations}`
       );
-      return result.data;
+      if (res.data.results[0].geometry.location) {
+        //@ts-ignore
+        const result = await axios.get(
+          `${GOOGLE_URL}/maps/api/distancematrix/json?key=${GOOGLE_MAPS_API_KEY}&origins=${body.origins}&destinations=${body.destinations}&units=imperial`
+        );
+        result.data["geometry"] = res.data.results[0].geometry.location;
+        return result.data;
+      }
     } catch (error) {
       const { response } = error;
       const { request, ...errorObject } = response; // take everything but 'request'
