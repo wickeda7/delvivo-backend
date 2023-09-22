@@ -22,7 +22,9 @@ module.exports = {
     //strapi.server.httpServer is the new update for Strapi V4
     // @ts-ignore
     process.nextTick(() => {
+      console.log("strapi.server.httpServer", HOST_URL);
       // @ts-ignore
+
       strapi.ioServer = require("socket.io")(strapi.server.httpServer, {
         cors: {
           // cors setup
