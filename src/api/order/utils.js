@@ -5,6 +5,7 @@ const utils = require("@strapi/utils");
 const CLOVER_APP_URL = process.env.CLOVER_APP_URL;
 //const { readFile, writeFile } = require("./test");
 const fs = require("fs");
+const order = require("./controllers/order");
 
 const { ApplicationError } = utils.errors;
 
@@ -207,4 +208,31 @@ const formatPrice = (number) => {
   }).format(number / 100);
 };
 
-module.exports = { getCloverOrders, addOrder, formatPrice };
+const parseMobileData = (data) => {
+  const { id, orderId, createdAt, itemContent, order_content, user } = data;
+  let content =
+    typeof order_content === "object"
+      ? order_content
+      : JSON.parse(order_content);
+
+  if (content.geometry) {
+    let items =
+      typeof itemContent === "object" ? itemContent : JSON.parse(itemContent);
+    const orderTime = new Date(createdAt).toLocaleTimeString("en-US", {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+    const address = content.createdOrders.note.split(": ");
+    return {
+      id,
+      orderId,
+      orderTime,
+      name: user.firstName + " " + user.lastName,
+      phone: user.phoneNumber,
+      address: address[1],
+      itemContent: items,
+      order_content: content,
+    };
+  }
+};
+module.exports = { getCloverOrders, addOrder, formatPrice, parseMobileData };

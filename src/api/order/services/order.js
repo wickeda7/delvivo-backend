@@ -1,6 +1,6 @@
 "use strict";
 
-const { addOrder, getCloverOrders } = require("../utils");
+const { addOrder, getCloverOrders, parseMobileData } = require("../utils");
 const { sendCustomerEmail } = require("../email/sendEmail");
 const e = require("cors");
 /**
@@ -23,33 +23,25 @@ module.exports = createCoreService("api::order.order", ({ strapi }) => ({
         },
         populate: "*", //customer
       });
+
       if (type) {
         const res = entries.reduce((acc, cur) => {
-          const { id, orderId, createdAt, itemContent, order_content, user } =
-            cur;
-          let content =
-            typeof order_content === "object"
-              ? order_content
-              : JSON.parse(order_content);
-          if (content.geometry) {
-            let items =
-              typeof itemContent === "object"
-                ? itemContent
-                : JSON.parse(itemContent);
-            acc.push({
-              id,
-              orderId,
-              createdAt,
-              itemContent: items,
-              order_content: content,
-              user,
-            });
+          const data = parseMobileData(cur);
+          if (data) {
+            acc.push(data);
           }
-
           return acc;
         }, []);
         return res;
       }
+      // const res = entries.reduce((acc, cur) => {
+      //   const data = parseMobileData(cur);
+      //   if (data) {
+      //     acc.push(data);
+      //   }
+      //   return acc;
+      // }, []);
+      // console.log("res", res);
       return entries;
     } catch (error) {
       throw new Error(error.message);
