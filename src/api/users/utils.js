@@ -230,14 +230,14 @@ const login = async (ctx) => {
   const grantSettings = await store.get({ key: "grant" });
 
   const grantProvider = provider === "local" ? "email" : provider;
-
+  console.log("params1");
   if (!_.get(grantSettings, [grantProvider, "enabled"])) {
     throw new ApplicationError("This provider is disabled");
   }
-
+  console.log("params2");
   if (provider === "local") {
     const { identifier, merchant_id } = params;
-
+    console.log("param31");
     // Check if the user exists.
     const user = await strapi.query("plugin::users-permissions.user").findOne({
       populate: ["role", "merchant"],
@@ -246,6 +246,7 @@ const login = async (ctx) => {
         $or: [{ email: identifier.toLowerCase() }, { username: identifier }],
       },
     });
+    console.log("params4");
     if (!user) {
       throw new ValidationError("Invalid identifier or password");
     }
