@@ -102,6 +102,12 @@
     },
     "cloverId": {
       "type": "string"
+    },
+    "driver": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::driver.driver",
+      "mappedBy": "user"
     }
   }
 }
