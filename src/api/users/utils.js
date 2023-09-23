@@ -224,7 +224,8 @@ const register = async (ctx) => {
 const login = async (ctx) => {
   const provider = ctx.params.provider || "local";
   const params = ctx.request.body;
-
+  console.log("params", params);
+  console.log("provider", provider);
   const store = strapi.store({ type: "plugin", name: "users-permissions" });
   const grantSettings = await store.get({ key: "grant" });
 
