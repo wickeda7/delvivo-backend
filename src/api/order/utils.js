@@ -223,15 +223,30 @@ const parseMobileData = (data) => {
       minute: "2-digit",
     });
     const address = content.createdOrders.note.split(": ");
+    const contentItems = content.items;
+    const elements = items.elements;
+    const lineItems = contentItems.reduce((acc, cur) => {
+      const element = elements.find((item) => item.id === cur.inventory_id);
+      if (element) {
+        acc.push({
+          id: element.id,
+          quantity: cur.quantity,
+          name: element.name,
+          price: element.price,
+          image: element.menuItem.imageFilename,
+        });
+      }
+      return acc;
+    }, []);
     return {
       id,
       orderId,
       orderTime,
       name: user.firstName + " " + user.lastName,
       phone: user.phoneNumber,
+      geometry: content.geometry,
       address: address[1],
-      itemContent: items,
-      order_content: content,
+      lineItems,
     };
   }
 };

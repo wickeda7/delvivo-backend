@@ -224,8 +224,6 @@ const register = async (ctx) => {
 const login = async (ctx) => {
   const provider = ctx.params.provider || "local";
   const params = ctx.request.body;
-  console.log("params", params);
-  console.log("provider", provider);
   const store = strapi.store({ type: "plugin", name: "users-permissions" });
   const grantSettings = await store.get({ key: "grant" });
 
@@ -246,7 +244,6 @@ const login = async (ctx) => {
         $or: [{ email: identifier.toLowerCase() }, { username: identifier }],
       },
     });
-    console.log("params4", user);
     if (!user) {
       throw new ValidationError("Invalid identifier or password");
     }
@@ -254,32 +251,27 @@ const login = async (ctx) => {
     if (!user.password) {
       throw new ValidationError("Invalid identifier or password");
     }
-    console.log("param31");
     const validPassword = await getService("user").validatePassword(
       params.password,
       user.password
     );
-
     if (!validPassword) {
       throw new ValidationError("Invalid identifier or password");
     }
     if (user.merchant_id != merchant_id) {
       throw new ValidationError("Invalid merchant");
     }
-    console.log("param1");
     const advancedSettings = await store.get({ key: "advanced" });
     const requiresConfirmation = _.get(advancedSettings, "email_confirmation");
 
     if (requiresConfirmation && user.confirmed !== true) {
       throw new ApplicationError("Your account email is not confirmed");
     }
-    console.log("param2");
     if (user.blocked === true) {
       throw new ApplicationError(
         "Your account has been blocked by an administrator"
       );
     }
-    console.log("param1");
     user.roleId = user.role.id;
     if (user.merchant) {
       user.merchant_name = user.merchant.merchant_name;
