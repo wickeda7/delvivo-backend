@@ -238,7 +238,7 @@ const login = async (ctx) => {
 
     // Check if the user exists.
     const user = await strapi.query("plugin::users-permissions.user").findOne({
-      populate: ["role", "merchant"],
+      populate: ["role", "merchant", "drivers"],
       where: {
         provider,
         $or: [{ email: identifier.toLowerCase() }, { username: identifier }],
