@@ -11,15 +11,12 @@ const { createCoreService } = require("@strapi/strapi").factories;
 
 module.exports = createCoreService("api::order.order", ({ strapi }) => ({
   storeOrders: async (ctx, next) => {
-    const { type } = ctx.request.query;
-    // console.log("ctx.createCoreSeorderrvice", created); //api::order.order  2023-08-29T00:00:00.000Z  2023-08-29T23:59:00.000Z
-    //const am = `${created}`;
-    // const pm = `${created}`;
-    const todayDate = new Date().toISOString().slice(0, 10);
+    const { type, created } = ctx.request.query;
+    console.log("created", created);
     try {
       const entries = await strapi.entityService.findMany("api::order.order", {
         filters: {
-          created: { $eq: todayDate },
+          created: { $eq: created },
         },
         populate: "*", //customer
       });
@@ -34,14 +31,6 @@ module.exports = createCoreService("api::order.order", ({ strapi }) => ({
         }, []);
         return res;
       }
-      // const res = entries.reduce((acc, cur) => {
-      //   const data = parseMobileData(cur);
-      //   if (data) {
-      //     acc.push(data);
-      //   }
-      //   return acc;
-      // }, []);
-      // console.log("res", res);
       return entries;
     } catch (error) {
       throw new Error(error.message);
