@@ -8834,6 +8834,11 @@ std-env@^3.0.1:
   resolved "https://registry.yarnpkg.com/std-env/-/std-env-3.3.3.tgz#a54f06eb245fdcfef53d56f3c0251f1d5c3d01fe"
   integrity sha512-Rz6yejtVyWnVjC1RFvNmYL10kgjC49EOghxWn0RFqlCHGFpQx+Xe7yW3I4ceK1SGrWIGMjD5Kbue8W/udkbMJg==
 
+strapi-plugin-timezone-select@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/strapi-plugin-timezone-select/-/strapi-plugin-timezone-select-1.0.0.tgz#d8b881f257ce693cd07d9b5af093d420a58c292f"
+  integrity sha512-qCMkuP7LJju92t9STAX6ffFiz5OZyPyoixSDb9Xr41fcmCgd5yIYw0LZwef6fiIQuUK54Ht34XBI4DLs1hv24A==
+
 strapio@^3.0.2:
   version "3.0.2"
   resolved "https://registry.yarnpkg.com/strapio/-/strapio-3.0.2.tgz#bca415849045d656b02a3bbab1eba5d1183555d3"
