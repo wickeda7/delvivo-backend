@@ -83,7 +83,7 @@ const addOrderBulk = async (data, type) => {
   }
 };
 const addOrder = async (body) => {
-  // console.log("body", body);
+  //console.log("body", body);
   //console.log("typeof orderContent", typeof body.order, body.order);
   if (body.order) {
     const {
@@ -209,7 +209,16 @@ const formatPrice = (number) => {
 };
 
 const parseMobileData = (data) => {
-  const { id, orderId, createdAt, itemContent, order_content, user } = data;
+  const {
+    id,
+    orderId,
+    createdAt,
+    departureTime,
+    arriveTime,
+    itemContent,
+    order_content,
+    user,
+  } = data;
   let content =
     typeof order_content === "object"
       ? order_content
@@ -246,6 +255,8 @@ const parseMobileData = (data) => {
       phone: user.phoneNumber,
       geometry: content.geometry,
       address: address[1],
+      departureTime,
+      arriveTime,
       lineItems,
     };
   }
