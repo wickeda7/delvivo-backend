@@ -76,9 +76,9 @@ module.exports = createCoreService("api::order.order", ({ strapi }) => ({
       if (data.status === "success") {
         try {
           await strapi.entityService.update("api::order.order", order.id, {
-            data: { notifiedDate: new Date() },
+            data: { notifiedDate: order.notifiedDate },
           });
-          return { id: order.id, notifiedDate: new Date() };
+          return { id: order.id, notifiedDate: order.notifiedDate };
         } catch (error) {
           console.log(error);
         }
