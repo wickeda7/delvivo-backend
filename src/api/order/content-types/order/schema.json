@@ -56,6 +56,14 @@
     },
     "order_content": {
       "type": "json"
+    },
+    "putType": {
+      "type": "enumeration",
+      "enum": [
+        "Mobile",
+        "Web"
+      ],
+      "default": "Web"
     }
   }
 }

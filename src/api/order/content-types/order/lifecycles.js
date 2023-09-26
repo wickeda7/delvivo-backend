@@ -3,6 +3,14 @@ const {
   sendMerchantEmail,
 } = require("../../email/sendEmail");
 module.exports = {
+  async afterUpdate(event, options) {
+    const { result, params } = event;
+    const updateType = result.putType;
+    if (updateType === "Mobile") {
+      // @ts-ignore
+      strapi.ioServer.emit("updateOrder", result);
+    }
+  },
   async afterCreate(event, options) {
     let order = {};
     const {
