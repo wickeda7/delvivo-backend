@@ -5,6 +5,7 @@ const {
 module.exports = {
   async afterUpdate(event, options) {
     const { result, params } = event;
+    console.log("afterUpdate result", result);
     const updateType = result.putType;
     if (updateType === "Mobile") {
       // @ts-ignore
