@@ -74,14 +74,15 @@ module.exports = createCoreService("api::order.order", ({ strapi }) => ({
       const data = await sendCustomerEmail(newOrder);
       console.log("sendEmail", data);
       if (data.status === "success") {
-        try {
-          await strapi.entityService.update("api::order.order", order.id, {
-            data: { notifiedDate: order.notifiedDate },
-          });
-          return { id: order.id, notifiedDate: order.notifiedDate };
-        } catch (error) {
-          console.log(error);
-        }
+        return { id: order.id, notifiedDate: order.notifiedDate };
+        // try {
+        //   await strapi.entityService.update("api::order.order", order.id, {
+        //     data: { notifiedDate: order.notifiedDate },
+        //   });
+        //   return { id: order.id, notifiedDate: order.notifiedDate };
+        // } catch (error) {
+        //   console.log(error);
+        // }
       }
     } catch (error) {
       ctx.badRequest(error.message, { moreDetails: error });
