@@ -4,7 +4,8 @@
   "info": {
     "singularName": "order-path",
     "pluralName": "order-paths",
-    "displayName": "orderPath"
+    "displayName": "orderPath",
+    "description": ""
   },
   "options": {
     "draftAndPublish": false
@@ -20,8 +21,7 @@
     "order": {
       "type": "relation",
       "relation": "oneToOne",
-      "target": "api::order.order",
-      "inversedBy": "order_path"
+      "target": "api::order.order"
     }
   }
 }
