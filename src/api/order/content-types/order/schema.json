@@ -64,6 +64,12 @@
         "Web"
       ],
       "default": "Web"
+    },
+    "order_path": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::order-path.order-path",
+      "mappedBy": "order"
     }
   }
 }

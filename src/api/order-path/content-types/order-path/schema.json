@@ -1,0 +1,27 @@
+{
+  "kind": "collectionType",
+  "collectionName": "order_paths",
+  "info": {
+    "singularName": "order-path",
+    "pluralName": "order-paths",
+    "displayName": "orderPath"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "orderId": {
+      "type": "string"
+    },
+    "paths": {
+      "type": "json"
+    },
+    "order": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::order.order",
+      "inversedBy": "order_path"
+    }
+  }
+}

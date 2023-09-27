@@ -6,11 +6,18 @@ module.exports = {
   async afterUpdate(event, options) {
     const { result, params } = event;
     //console.log("afterUpdate result", result);
+    console.log("afterUpdate params", params);
     const updateType = result.putType;
     if (updateType === "Mobile") {
       // @ts-ignore
       strapi.ioServer.emit("updateOrder", result);
     }
+    //io.sockets.emit('new-message', {data: data, item: num});
+    //   socket.on('new-message', function(msgData){
+    //     if (msgData.item === xx) {
+    //         // handle just a particular message number here
+    //     }
+    // }
   },
   async afterCreate(event, options) {
     let order = {};
