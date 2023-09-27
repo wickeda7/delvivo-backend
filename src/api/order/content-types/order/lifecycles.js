@@ -34,6 +34,8 @@ module.exports = {
       });
       try {
         await sendCustomerEmail({ type: "new", resOrder: order, entry });
+        // @ts-ignore
+        strapi.ioServer.emit("newOrder", { order: event.result, entry });
       } catch (error) {
         console.log(error);
       }
