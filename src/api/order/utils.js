@@ -218,6 +218,7 @@ const parseMobileData = (data) => {
     itemContent,
     order_content,
     user,
+    order_path,
   } = data;
   let content =
     typeof order_content === "object"
@@ -258,6 +259,7 @@ const parseMobileData = (data) => {
       departureTime,
       arriveTime,
       lineItems,
+      order_path,
     };
   }
 };
