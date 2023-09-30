@@ -1,5 +1,5 @@
 "use strict";
-
+require("dotenv").config();
 const { addOrder, getCloverOrders, parseMobileData } = require("../utils");
 const { sendCustomerEmail } = require("../email/sendEmail");
 const e = require("cors");
@@ -60,29 +60,32 @@ module.exports = createCoreService("api::order.order", ({ strapi }) => ({
     try {
       // convert order to lifecycle format
       const newOrder = {};
+
       newOrder["type"] = "update";
       newOrder["entry"] = { itemContent: order.itemContent, user: order.user };
       order["email"] = order.user.email;
       delete order.itemContent;
       delete order.user;
-      //console.log("order", order);
       const order_content = order.order_content;
       newOrder["resOrder"] = {
         ...order,
         ...order_content,
       };
+
       const data = await sendCustomerEmail(newOrder);
-      console.log("sendEmail", data);
       if (data.status === "success") {
-        return { id: order.id, notifiedDate: order.notifiedDate };
-        // try {
-        //   await strapi.entityService.update("api::order.order", order.id, {
-        //     data: { notifiedDate: order.notifiedDate },
-        //   });
-        //   return { id: order.id, notifiedDate: order.notifiedDate };
-        // } catch (error) {
-        //   console.log(error);
-        // }
+        if (order.putType === "Mobile") {
+          return { id: order.id, notifiedDate: order.notifiedDate };
+        }
+
+        try {
+          await strapi.entityService.update("api::order.order", order.id, {
+            data: { notifiedDate: order.notifiedDate },
+          });
+          return { id: order.id, notifiedDate: order.notifiedDate };
+        } catch (error) {
+          console.log(error);
+        }
       }
     } catch (error) {
       ctx.badRequest(error.message, { moreDetails: error });

@@ -8,6 +8,7 @@ const { templateLineItems } = require("./templateLineItems");
 const { templateTotal } = require("./templateTotal");
 const { templatePaymentInfo } = require("./templatePaymentInfo");
 const { formatPrice } = require("../utils");
+require("dotenv").config();
 
 const htmlTemplate = (data) => {
   const {
@@ -22,17 +23,24 @@ const htmlTemplate = (data) => {
         note,
       },
       source: { brand, last4, name: cardName },
+      path,
     },
     entry: {
       itemContent,
       user: { lastName, firstName, email, address, city, state, zip },
     },
   } = data;
-
+  let track = false;
+  let url = "";
+  const HOST_URL = process.env.HOST_URL;
   let confirmData = {};
   const name = firstName + " " + lastName;
   const dateObject = new Date(created);
   const date = dateObject.toLocaleString();
+  if (path) {
+    track = true;
+    url = `${HOST_URL}/maps/${id}/${path.id}`;
+  }
   if (data.resOrder.type) {
     const title = data.resOrder.isPickup
       ? "Your order is ready!"
@@ -47,6 +55,8 @@ const htmlTemplate = (data) => {
       title: title,
       message1: message1,
       message2: "",
+      track,
+      url,
     };
   } else {
     confirmData = {
@@ -56,6 +66,8 @@ const htmlTemplate = (data) => {
       title: "Order Confirmed",
       message1: "We've got your order!",
       message2: "We'll drop you another email when your order is ready.",
+      track,
+      url,
     };
   }
   const confirm = templateConfirm(confirmData);

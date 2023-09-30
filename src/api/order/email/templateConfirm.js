@@ -36,6 +36,11 @@ const templateConfirm = (data) => {
       <span data-key="1468270_order_number">Order No.</span> <%- oderId %>
     </h2>
     <p class="muted" style="mso-line-height-rule: exactly; font-family: -apple-system,BlinkMacSystemFont,'Segoe UI',Arial,'Karla'; font-size: 14px; line-height: 26px; font-weight: normal; color: #bdbdbd; margin: 0;" align="center"><%- date %></p>
+    <% if(track) { %>
+      <p  style="mso-line-height-rule: exactly;  font-size: 14px; line-height: 26px; font-weight: bole; color: #bdbdbd; margin: 0;" align="center">
+      <a href="<%- url %>" target="_blank">TRACK YOUR DELIVERY</a>
+      </p>
+    <% } %>
   </th>
   </tr>
   <!-- END SECTION: Order Number And Date -->`;
