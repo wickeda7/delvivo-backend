@@ -28,7 +28,8 @@ module.exports = {
       strapi.ioServer = require("socket.io")(strapi.server.httpServer, {
         cors: {
           // cors setup
-          "Allow-Origin": HOST_URL,
+          // "Allow-Origin": HOST_URL,
+          origin: [HOST_URL, "http://localhost:3000"],
           methods: ["GET", "POST"],
           allowedHeaders: ["my-custom-header"],
           credentials: true,
