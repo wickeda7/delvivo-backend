@@ -224,8 +224,8 @@ const parseMobileData = (data) => {
     typeof order_content === "object"
       ? order_content
       : JSON.parse(order_content);
-
-  if (content.geometry) {
+  //label content.createdOrders
+  if (!content.createdOrders.orderType.labelKey.includes("pick_up")) {
     let items =
       typeof itemContent === "object" ? itemContent : JSON.parse(itemContent);
     const orderTime = new Date(createdAt).toLocaleTimeString("en-US", {
