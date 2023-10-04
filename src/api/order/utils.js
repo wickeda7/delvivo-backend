@@ -220,6 +220,7 @@ const parseMobileData = (data) => {
     user,
     order_path,
   } = data;
+  if (arriveTime !== null) return;
   let content =
     typeof order_content === "object"
       ? order_content
