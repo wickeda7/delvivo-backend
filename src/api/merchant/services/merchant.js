@@ -63,6 +63,7 @@ module.exports = createCoreService("api::merchant.merchant", ({ strapi }) => ({
         };
         return response;
       } catch (error) {}
+      return;
     }
     const {
       access_token,
