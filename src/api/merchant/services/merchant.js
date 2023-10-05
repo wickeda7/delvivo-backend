@@ -17,32 +17,32 @@ module.exports = createCoreService("api::merchant.merchant", ({ strapi }) => ({
     const entry = await strapi.db.query("api::merchant.merchant").findOne({
       where: { merchant_id: id },
     });
+    console.log("entry", entry);
     if (entry) {
-      const headers = {
-        "Content-Type": "application/json",
-        authorization: `Bearer ${entry.access_token}`,
-      };
+      // const headers = {
+      //   "Content-Type": "application/json",
+      //   authorization: `Bearer ${entry.access_token}`,
+      // };
       try {
-        //@ts-ignore
-        const res = await axios.get(
-          `${CLOVER_APP_URL}/v3/merchants/${id}/address`,
-          {
-            headers: headers,
-          }
-        );
-        const address = `${res.data.address1}, ${res.data.city}, ${res.data.state}, ${res.data.zip}`;
-        // @ts-ignore
-        const geo = await axios.get(
-          `${GOOGLE_URL}/maps/api/geocode/json?key=${GOOGLE_MAPS_API_KEY}&address=${address}`
-        );
-        console.log("address", geo.data.results[0].geometry.location);
+        // //@ts-ignore
+        // const res = await axios.get(
+        //   `${CLOVER_APP_URL}/v3/merchants/${id}/address`,
+        //   {
+        //     headers: headers,
+        //   }
+        // );
+        // const address = `${res.data.address1}, ${res.data.city}, ${res.data.state}, ${res.data.zip}`;
+        // // @ts-ignore
+        // const geo = await axios.get(
+        //   `${GOOGLE_URL}/maps/api/geocode/json?key=${GOOGLE_MAPS_API_KEY}&address=${address}`
+        // );
+        // console.log("address", geo.data.results[0].geometry.location);
       } catch (error) {}
     }
   },
   updateMerchant: async (ctx, next) => {
     const address = ctx.request.body.address;
     console.log("address", address);
-    console.log("ctx.request.body", ctx.request.body);
     let response = {};
     if (address) {
       try {
