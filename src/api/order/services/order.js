@@ -11,11 +11,12 @@ const { createCoreService } = require("@strapi/strapi").factories;
 
 module.exports = createCoreService("api::order.order", ({ strapi }) => ({
   storeOrders: async (ctx, next) => {
-    const { type, created } = ctx.request.query;
+    const { type, created, merchant_id } = ctx.request.query;
     try {
       const entries = await strapi.entityService.findMany("api::order.order", {
         filters: {
           created: { $eq: created },
+          merchant_id: { $eq: merchant_id },
         },
         populate: "*", //customer
       });

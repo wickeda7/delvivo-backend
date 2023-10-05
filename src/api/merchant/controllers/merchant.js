@@ -20,5 +20,16 @@ module.exports = createCoreController(
         200
       );
     },
+    getMerchant: async (ctx, next) => {
+      const data = await strapi
+        .service("api::merchant.merchant")
+        .getMerchant(ctx, next);
+      ctx.send(
+        {
+          data,
+        },
+        200
+      );
+    },
   })
 );

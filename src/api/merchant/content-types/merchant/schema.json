@@ -42,6 +42,9 @@
     },
     "notify_email": {
       "type": "email"
+    },
+    "address": {
+      "type": "json"
     }
   }
 }

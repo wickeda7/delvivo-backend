@@ -6,11 +6,62 @@
 require("dotenv").config();
 const axios = require("axios");
 const CLOVER_APP_URL = process.env.CLOVER_APP_URL;
+const GOOGLE_MAPS_API_KEY = process.env.GOOGLE_MAPS_API_KEY;
+const GOOGLE_URL = process.env.GOOGLE_URL;
 
 const { createCoreService } = require("@strapi/strapi").factories;
 
 module.exports = createCoreService("api::merchant.merchant", ({ strapi }) => ({
+  getMerchant: async (ctx, next) => {
+    const { id } = ctx.params;
+    const entry = await strapi.db.query("api::merchant.merchant").findOne({
+      where: { merchant_id: id },
+    });
+    if (entry) {
+      const headers = {
+        "Content-Type": "application/json",
+        authorization: `Bearer ${entry.access_token}`,
+      };
+      try {
+        //@ts-ignore
+        const res = await axios.get(
+          `${CLOVER_APP_URL}/v3/merchants/${id}/address`,
+          {
+            headers: headers,
+          }
+        );
+        const address = `${res.data.address1}, ${res.data.city}, ${res.data.state}, ${res.data.zip}`;
+        // @ts-ignore
+        const geo = await axios.get(
+          `${GOOGLE_URL}/maps/api/geocode/json?key=${GOOGLE_MAPS_API_KEY}&address=${address}`
+        );
+        console.log("address", geo.data.results[0].geometry.location);
+      } catch (error) {}
+    }
+  },
   updateMerchant: async (ctx, next) => {
+    const address = ctx.request.body.address;
+    let response = {};
+    if (address) {
+      try {
+        const { id } = ctx.params;
+        const newData = {
+          address: JSON.stringify(address),
+        };
+        const entry = await strapi.db.query("api::merchant.merchant").update({
+          where: { merchant_id: id },
+          data: newData,
+        });
+        response = {
+          merchant_id: entry.merchant_id,
+          notify_email: entry.notify_email,
+          orderTypes: JSON.parse(entry.order_types),
+          access_token: entry.access_token,
+          address: JSON.parse(entry.address),
+        };
+        return response;
+      } catch (error) {}
+    }
     const {
       access_token,
       merchant_id,
@@ -25,7 +76,7 @@ module.exports = createCoreService("api::merchant.merchant", ({ strapi }) => ({
       authorization: `Bearer ${access_token}`,
     };
     const body = { fee, maxRadius, minOrderAmount };
-    let response = {};
+
     try {
       //@ts-ignore
       const res = await axios.post(
@@ -56,6 +107,7 @@ module.exports = createCoreService("api::merchant.merchant", ({ strapi }) => ({
           notify_email: entry.notify_email,
           orderTypes: JSON.parse(entry.order_types),
           access_token: entry.access_token,
+          address: JSON.parse(entry.address),
         };
       }
       return response;

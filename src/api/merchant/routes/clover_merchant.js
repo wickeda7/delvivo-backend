@@ -10,11 +10,11 @@ module.exports = {
     //     path: "/orders/storeorders", //getStoreOrders
     //     handler: "order.storeOrders",
     //   },
-    //   {
-    //     method: "POST",
-    //     path: "/orders",
-    //     handler: "order.postOrders",
-    //   },
+    {
+      method: "GET",
+      path: "/merchants/:id",
+      handler: "merchant.getMerchant",
+    },
     {
       method: "PUT",
       path: "/merchants/:id",
