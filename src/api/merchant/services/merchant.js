@@ -14,30 +14,13 @@ const { createCoreService } = require("@strapi/strapi").factories;
 module.exports = createCoreService("api::merchant.merchant", ({ strapi }) => ({
   getMerchant: async (ctx, next) => {
     const { id } = ctx.params;
-    const entry = await strapi.db.query("api::merchant.merchant").findOne({
-      where: { merchant_id: id },
-    });
-    console.log("entry", entry);
-    if (entry) {
-      // const headers = {
-      //   "Content-Type": "application/json",
-      //   authorization: `Bearer ${entry.access_token}`,
-      // };
-      try {
-        // //@ts-ignore
-        // const res = await axios.get(
-        //   `${CLOVER_APP_URL}/v3/merchants/${id}/address`,
-        //   {
-        //     headers: headers,
-        //   }
-        // );
-        // const address = `${res.data.address1}, ${res.data.city}, ${res.data.state}, ${res.data.zip}`;
-        // // @ts-ignore
-        // const geo = await axios.get(
-        //   `${GOOGLE_URL}/maps/api/geocode/json?key=${GOOGLE_MAPS_API_KEY}&address=${address}`
-        // );
-        // console.log("address", geo.data.results[0].geometry.location);
-      } catch (error) {}
+    try {
+      const entry = await strapi.db.query("api::merchant.merchant").findOne({
+        where: { merchant_id: id },
+      });
+      return entry;
+    } catch (error) {
+      return error;
     }
   },
   updateMerchant: async (ctx, next) => {
