@@ -244,6 +244,7 @@ const login = async (ctx) => {
         $or: [{ email: identifier.toLowerCase() }, { username: identifier }],
       },
     });
+    console.log("user", user);
     if (!user) {
       throw new ValidationError("Invalid identifier or password");
     }

@@ -41,6 +41,8 @@ module.exports = createCoreService("api::merchant.merchant", ({ strapi }) => ({
   },
   updateMerchant: async (ctx, next) => {
     const address = ctx.request.body.address;
+    console.log("address", address);
+    console.log("ctx.request.body", ctx.request.body);
     let response = {};
     if (address) {
       try {
