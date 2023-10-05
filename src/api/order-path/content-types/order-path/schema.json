@@ -23,6 +23,12 @@
       "relation": "oneToOne",
       "target": "api::order.order",
       "mappedBy": "path"
+    },
+    "store_coord": {
+      "type": "json"
+    },
+    "customer_coord": {
+      "type": "json"
     }
   }
 }
