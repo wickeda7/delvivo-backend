@@ -25,6 +25,7 @@ module.exports = createCoreService("api::merchant.merchant", ({ strapi }) => ({
   },
   updateMerchant: async (ctx, next) => {
     const address = ctx.request.body.address;
+
     let response = {};
     if (address) {
       try {
@@ -39,7 +40,7 @@ module.exports = createCoreService("api::merchant.merchant", ({ strapi }) => ({
         response = {
           merchant_id: entry.merchant_id,
           notify_email: entry.notify_email,
-          orderTypes: JSON.parse(entry.order_types),
+          order_types: JSON.parse(entry.order_types),
           access_token: entry.access_token,
           address: JSON.parse(entry.address),
         };
@@ -47,6 +48,7 @@ module.exports = createCoreService("api::merchant.merchant", ({ strapi }) => ({
       } catch (error) {}
       return;
     }
+    console.log("ctx.request.body.data", ctx.request.body.data);
     const {
       access_token,
       merchant_id,
@@ -90,7 +92,7 @@ module.exports = createCoreService("api::merchant.merchant", ({ strapi }) => ({
         response = {
           merchant_id: entry.merchant_id,
           notify_email: entry.notify_email,
-          orderTypes:
+          order_types:
             typeof entry.order_types === "string"
               ? JSON.parse(entry.order_types)
               : entry.order_types,
