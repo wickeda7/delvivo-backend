@@ -118,4 +118,4 @@ build
 .strapi-updater.json
 
 # path: ./.gitignore
-package-lock.json
+package-lock.jsonnode_modules
