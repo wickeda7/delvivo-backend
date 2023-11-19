@@ -120,7 +120,7 @@ const createCloverUser = async (ctx, access_token) => {
   return cloverId;
 };
 const register = async (ctx) => {
-  const {
+  let {
     firstName,
     lastName,
     email,
@@ -133,6 +133,9 @@ const register = async (ctx) => {
     state,
     zip,
   } = ctx.request.body;
+  if (isMember) {
+    isMember = true;
+  }
 
   const entry = await getPakms(merchant_id);
   if (entry.access_token) {

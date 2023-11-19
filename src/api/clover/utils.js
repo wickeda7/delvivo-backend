@@ -6,7 +6,8 @@ const CLOVER_APP_URL = process.env.CLOVER_APP_URL;
 const CLOVER_APIS_URL = process.env.CLOVER_APIS_URL;
 const CLOVER_TOKEN_URL = process.env.CLOVER_TOKEN_URL;
 const CLOVER_SCL_URL = process.env.CLOVER_SCL_URL;
-
+const GOOGLE_MAPS_API_KEY = process.env.GOOGLE_MAPS_API_KEY;
+const GOOGLE_URL = process.env.GOOGLE_URL;
 const getPakms = async (merchant_id) => {
   const entry = await strapi.db.query("api::merchant.merchant").findOne({
     where: { merchant_id: merchant_id },
@@ -70,7 +71,8 @@ const updateMerchantDB = async (
   access_token,
   apiAccessKey,
   employee_id,
-  orderTypes
+  orderTypes,
+  address
 ) => {
   let data = { access_token, apiAccessKey };
   let entry = null;
@@ -93,6 +95,10 @@ const updateMerchantDB = async (
       employee_id,
       client_id: CLOVER_APP_ID,
       order_types: orderTypes,
+      address: JSON.stringify(address),
+      lat: address.lat,
+      lng: address.lng,
+      zip: address.zip,
     };
     entry = await strapi.db
       .query("api::merchant.merchant")
@@ -161,10 +167,74 @@ const createOrderTypes = async (access_token, merchant_id) => {
   }
   return orderTypes;
 };
+const getGoogleGeoCode = async (address) => {
+  try {
+    const addr = `${address.address}, ${address.city}, ${address.state} ${address.zip}`;
+    // @ts-ignore
+    const response = await axios.get(
+      `${GOOGLE_URL}/maps/api/geocode/json?key=${GOOGLE_MAPS_API_KEY}&address=${addr}`
+    );
+    const res = await response.data;
+    return {
+      lat: res.results[0].geometry.location.lat,
+      lng: res.results[0].geometry.location.lng,
+    };
+  } catch (error) {
+    const { response } = error;
+    const { request, ...errorObject } = response; // take everything but 'request'
+    console.log(
+      "-----------------------Geocode ERROR--------------------------------------------"
+    );
+    console.log(errorObject.data);
+    return errorObject.data;
+  }
+};
+const getAddress = async (merchant_id, access_token) => {
+  try {
+    const headers = {
+      "Content-Type": "application/json",
+      accept: "application/json",
+      authorization: `Bearer ${access_token}`,
+    };
+    // @ts-ignore
+    const response = await axios.get(
+      `${CLOVER_APP_URL}/v3/merchants/${merchant_id}/address`,
+      {
+        headers: headers,
+      }
+    );
+    let address = await response.data;
+    // let address = {
+    //   city: "ROSEMEAD",
+    //   phoneNumber: "6266754894",
+    //   state: "CA",
+    //   zip: "91770",
+    //   address: "1328 N San Gabriel Blvd",
+    // };
+    if (address.address1) {
+      delete address.href;
+      delete address.country;
+      address.address = address.address1;
+      delete address.address1;
+    }
+    const geoCode = await getGoogleGeoCode(address);
+    address = { ...address, ...geoCode };
+    return address;
+  } catch (error) {
+    const { response } = error;
+    const { request, ...errorObject } = response; // take everything but 'request'
+    console.log(
+      "-----------------------Address ERROR--------------------------------------------"
+    );
+    console.log(errorObject.data);
+    return errorObject.data;
+  }
+};
 const getAuth = async (code, employee_id, merchant_id) => {
   // https://sandbox.dev.clover.com/v3/merchants/mId/?expand=owner
   let apiAccessKey = "";
   let merchant_name = "";
+
   try {
     // // create access token
     const access_token = await getAccessToken(code);
@@ -174,25 +244,37 @@ const getAuth = async (code, employee_id, merchant_id) => {
       // get merchant name
       merchant_name = await getMerchantName(merchant_id, access_token);
     }
+    const address = await getAddress(merchant_id, access_token);
+    // address {
+    //   city: 'ROSEMEAD',
+    //   phoneNumber: '6266754894',
+    //   state: 'CA',
+    //   zip: '91770',
+    //   address: '1328 N San Gabriel Blvd',
+    //   lat: 34.0447459,
+    //   lng: -118.0901381
+    // }
     // // create order types
     const orderTypes = await createOrderTypes(access_token, merchant_id);
 
-    // update merchant db
-    const entry = await getPakms(merchant_id);
-    console.log("entry", entry.access_token);
-    const type = entry ? "update" : "create";
+    // update merchant db /// need to check if updating merchant than use getpakms
+    // const entry = await getPakms(merchant_id);
+    // console.log("entry", entry.access_token);
+    // const type = entry ? "update" : "create";
     updateMerchantDB(
-      type,
+      "create",
+      //type,
       merchant_id,
       merchant_name,
       access_token,
       apiAccessKey,
       employee_id,
-      JSON.stringify(orderTypes)
+      JSON.stringify(orderTypes),
+      address
     );
     return {
-      access_token,
       orderTypes,
+      address,
     };
   } catch (error) {
     const { response } = error;

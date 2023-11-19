@@ -17,13 +17,11 @@ const GOOGLE_URL = process.env.GOOGLE_URL;
 
 module.exports = {
   cloverGetAuth: async (ctx) => {
-    const body = ctx.request.body;
+    const body = ctx.request.body.data;
+    const { code, employeeId, merchantId } = body;
+
     try {
-      const result = await getAuth(
-        body.code,
-        body.employee_id,
-        body.merchant_id
-      );
+      const result = await getAuth(code, employeeId, merchantId);
       return result;
     } catch (error) {
       const { response } = error;
