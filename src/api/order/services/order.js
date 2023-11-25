@@ -39,12 +39,12 @@ module.exports = createCoreService("api::order.order", ({ strapi }) => ({
   postOrders: async (ctx, next) => {
     // console.log("ctx.createCoreSeorderrvice", order); //api::order.order
     try {
-      const res = await addOrder(ctx.request.body);
+      const resp = await addOrder(ctx.request.body);
       // @ts-ignore
       //   if (!res) {
       //     throw new Error("Error creating order");
       //   }
-      //console.log("data11", res.data);
+      return resp;
     } catch (error) {
       throw new Error(error.message);
     }

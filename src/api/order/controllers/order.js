@@ -48,7 +48,7 @@ module.exports = createCoreController("api::order.order", ({ strapi }) => ({
       const data = await strapi.service("api::order.order").postOrders(ctx);
       ctx.send(
         {
-          message: "postOrders",
+          data: data,
         },
         200
       );

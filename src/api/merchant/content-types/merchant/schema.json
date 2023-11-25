@@ -54,6 +54,9 @@
     },
     "zip": {
       "type": "string"
+    },
+    "county": {
+      "type": "string"
     }
   }
 }
