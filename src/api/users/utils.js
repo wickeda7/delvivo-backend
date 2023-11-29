@@ -138,6 +138,8 @@ const register = async (ctx) => {
   }
 
   const entry = await getPakms(merchant_id);
+  console.log("merchant_id", merchant_id);
+  console.log("entry", entry);
   if (entry.access_token) {
     const pluginStore = await strapi.store({
       type: "plugin",
