@@ -99,6 +99,7 @@ const updateMerchantDB = async (
       lat: address.lat,
       lng: address.lng,
       zip: address.zip,
+      county: address.county,
     };
     entry = await strapi.db
       .query("api::merchant.merchant")
@@ -175,9 +176,14 @@ const getGoogleGeoCode = async (address) => {
       `${GOOGLE_URL}/maps/api/geocode/json?key=${GOOGLE_MAPS_API_KEY}&address=${addr}`
     );
     const res = await response.data;
+    const temp = res.results[0].address_components;
+    const arr = temp.filter((item) =>
+      item.types.includes("administrative_area_level_2")
+    );
     return {
       lat: res.results[0].geometry.location.lat,
       lng: res.results[0].geometry.location.lng,
+      county: arr[0].long_name,
     };
   } catch (error) {
     const { response } = error;
