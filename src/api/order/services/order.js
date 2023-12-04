@@ -12,6 +12,9 @@ const { createCoreService } = require("@strapi/strapi").factories;
 module.exports = createCoreService("api::order.order", ({ strapi }) => ({
   storeOrders: async (ctx, next) => {
     const { type, created, merchant_id } = ctx.request.query;
+    console.log("type", type);
+    console.log("created", created);
+    console.log("merchant_id", merchant_id);
     try {
       const entries = await strapi.entityService.findMany("api::order.order", {
         filters: {
@@ -20,7 +23,7 @@ module.exports = createCoreService("api::order.order", ({ strapi }) => ({
         },
         populate: "*", //customer
       });
-
+      console.log("entries", entries);
       if (type) {
         const res = entries.reduce((acc, cur) => {
           const data = parseMobileData(cur);
