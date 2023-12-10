@@ -309,7 +309,12 @@ const createCardToken = async (card, pakms_apikey) => {
     const { response } = error;
     const { request, ...errorObject } = response; // take everything but 'request'
     console.log(
-      "-----------------------TOKEN ERROR--------------------------------------------"
+      "-----------------------TOKEN ERROR1--------------------------------------------"
+    );
+    console.log(card);
+    console.log(pakms_apikey);
+    console.log(
+      "-----------------------TOKEN ERROR2--------------------------------------------"
     );
     console.log(errorObject.data);
     return errorObject.data;
@@ -374,7 +379,11 @@ const orderPayment = async (order, token, access_token, customerInfo) => {
     const { response } = error;
     const { request, ...errorObject } = response; // take everything but 'request'
     console.log(
-      "--------------------- PAYMENT ERROR--------------------------------------------"
+      "--------------------- PAYMENT ERROR1--------------------------------------------"
+    );
+    console.log(body);
+    console.log(
+      "--------------------- PAYMENT ERROR2--------------------------------------------"
     );
     console.log(errorObject.data);
 
