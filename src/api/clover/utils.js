@@ -69,18 +69,18 @@ const updateMerchantDB = async (
   merchant_id,
   merchant_name,
   access_token,
-  apiAccessKey,
+  pakms_apikey,
   employee_id,
   orderTypes,
   address
 ) => {
-  let data = { access_token, apiAccessKey };
+  let data = { access_token, pakms_apikey };
   let entry = null;
   if (type === "update") {
     data = {
       merchant_name,
       access_token,
-      apiAccessKey,
+      pakms_apikey,
       order_types: orderTypes,
     };
     entry = await strapi.db
@@ -89,7 +89,7 @@ const updateMerchantDB = async (
   } else {
     data = {
       access_token,
-      apiAccessKey,
+      pakms_apikey,
       merchant_id,
       merchant_name,
       employee_id,
