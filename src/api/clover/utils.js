@@ -60,7 +60,7 @@ const createPakms = async (access_token) => {
   const result = await axios.get(`${CLOVER_APIS_URL}/pakms/apikey`, {
     headers: headers,
   });
-  console.log("result", result.data);
+  console.log("createPakms result", result.data);
   return result.data.apiAccessKey;
 };
 
@@ -101,6 +101,7 @@ const updateMerchantDB = async (
       zip: address.zip,
       county: address.county,
     };
+    console.log("data", data);
     entry = await strapi.db
       .query("api::merchant.merchant")
       .create({ data: data });
@@ -238,15 +239,16 @@ const getAddress = async (merchant_id, access_token) => {
 };
 const getAuth = async (code, employee_id, merchant_id) => {
   // https://sandbox.dev.clover.com/v3/merchants/mId/?expand=owner
-  let apiAccessKey = "";
+  let pakms_apikey = "";
   let merchant_name = "";
 
   try {
     // // create access token
     const access_token = await getAccessToken(code);
+    console.log("access_token", access_token);
     if (access_token) {
       // create pakms api key
-      apiAccessKey = await createPakms(access_token);
+      pakms_apikey = await createPakms(access_token);
       // get merchant name
       merchant_name = await getMerchantName(merchant_id, access_token);
     }
@@ -273,7 +275,7 @@ const getAuth = async (code, employee_id, merchant_id) => {
       merchant_id,
       merchant_name,
       access_token,
-      apiAccessKey,
+      pakms_apikey,
       employee_id,
       JSON.stringify(orderTypes),
       address
