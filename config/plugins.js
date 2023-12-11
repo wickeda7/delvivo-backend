@@ -23,8 +23,8 @@ module.exports = ({ env }) => ({
         apiKey: env("SENDGRID_API_KEY"),
       },
       settings: {
-        defaultFrom: "hung@tnnbeauty.net",
-        defaultReplyTo: "hung@tnnbeauty.net",
+        defaultFrom: "info@getdelvivo.com",
+        defaultReplyTo: "info@getdelvivo.com",
         testAddress: "wickedgs400@yahoo.com",
       },
     },
