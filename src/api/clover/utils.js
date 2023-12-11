@@ -101,7 +101,6 @@ const updateMerchantDB = async (
       zip: address.zip,
       county: address.county,
     };
-    console.log("data", data);
     entry = await strapi.db
       .query("api::merchant.merchant")
       .create({ data: data });
@@ -146,7 +145,6 @@ const createOrderTypes = async (access_token, merchant_id) => {
       headers: headers,
     }
   );
-  console.log("pickupRes", pickupRes.data);
   if (pickupRes.data.id) {
     orderTypes.pickup = { id: pickupRes.data.id };
     // @ts-ignore
@@ -157,7 +155,6 @@ const createOrderTypes = async (access_token, merchant_id) => {
         headers: headers,
       }
     );
-    console.log("deliveryRes", deliveryRes.data);
     if (deliveryRes.data.id) {
       orderTypes.delivery = {
         id: deliveryRes.data.id,
@@ -245,7 +242,6 @@ const getAuth = async (code, employee_id, merchant_id) => {
   try {
     // // create access token
     const access_token = await getAccessToken(code);
-    console.log("access_token", access_token);
     if (access_token) {
       // create pakms api key
       pakms_apikey = await createPakms(access_token);
@@ -313,11 +309,7 @@ const createCardToken = async (card, pakms_apikey) => {
     console.log(
       "-----------------------TOKEN ERROR1--------------------------------------------"
     );
-    console.log(card);
-    console.log(pakms_apikey);
-    console.log(
-      "-----------------------TOKEN ERROR2--------------------------------------------"
-    );
+
     console.log(errorObject.data);
     return errorObject.data;
   }
@@ -383,10 +375,7 @@ const orderPayment = async (order, token, access_token, customerInfo) => {
     console.log(
       "--------------------- PAYMENT ERROR1--------------------------------------------"
     );
-    console.log(body);
-    console.log(
-      "--------------------- PAYMENT ERROR2--------------------------------------------"
-    );
+
     console.log(errorObject.data);
 
     return errorObject.data;
