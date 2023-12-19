@@ -138,7 +138,7 @@ const register = async (ctx) => {
   if (isMember) {
     isMember = true;
   }
-
+  console.log("firstName", firstName);
   // const entry = await getPakms(merchant_id);
   // console.log("merchant_id", merchant_id);
   // console.log("entry", entry);
