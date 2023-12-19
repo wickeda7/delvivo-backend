@@ -48,7 +48,6 @@ const getRoleId = async (isMember, default_role, cloveradmin) => {
     if (!role) {
       throw new ApplicationError("Impossible to find the default role");
     }
-    console.log("role", role);
   } else {
     role = await strapi
       .query("plugin::users-permissions.role")
@@ -146,7 +145,6 @@ const register = async (ctx) => {
     name: "users-permissions",
   });
   const settings = await pluginStore.get({ key: "advanced" });
-  console.log("settings", settings);
   //const cloverId = await createCloverUser(ctx, entry.access_token);
   const role = await getRoleId(isMember, settings.default_role, "cloveradmin");
   const params = {
@@ -246,7 +244,6 @@ const login = async (ctx) => {
         $or: [{ email: identifier.toLowerCase() }, { username: identifier }],
       },
     });
-    console.log("user", user);
     if (!user) {
       throw new ValidationError("Invalid identifier or password");
     }
@@ -261,9 +258,9 @@ const login = async (ctx) => {
     if (!validPassword) {
       throw new ValidationError("Invalid identifier or password");
     }
-    if (user.merchant_id != merchant_id) {
-      throw new ValidationError("Invalid merchant");
-    }
+    // if (user.merchant_id != merchant_id) {
+    //   throw new ValidationError("Invalid merchant");
+    // }
     const advancedSettings = await store.get({ key: "advanced" });
     const requiresConfirmation = _.get(advancedSettings, "email_confirmation");
 
