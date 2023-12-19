@@ -48,6 +48,7 @@ const getRoleId = async (isMember, default_role, cloveradmin) => {
     if (!role) {
       throw new ApplicationError("Impossible to find the default role");
     }
+    console.log("role", role);
   } else {
     role = await strapi
       .query("plugin::users-permissions.role")
@@ -120,8 +121,6 @@ const createCloverUser = async (ctx, access_token) => {
   return cloverId;
 };
 const register = async (ctx) => {
-  console.log("ctx.request.body", ctx.request.body);
-  console.log("ctx.request.body", ctx.request);
   let {
     firstName,
     lastName,
@@ -138,7 +137,6 @@ const register = async (ctx) => {
   if (isMember) {
     isMember = true;
   }
-  console.log("firstName", firstName);
   // const entry = await getPakms(merchant_id);
   // console.log("merchant_id", merchant_id);
   // console.log("entry", entry);
@@ -148,6 +146,7 @@ const register = async (ctx) => {
     name: "users-permissions",
   });
   const settings = await pluginStore.get({ key: "advanced" });
+  console.log("settings", settings);
   //const cloverId = await createCloverUser(ctx, entry.access_token);
   const role = await getRoleId(isMember, settings.default_role, "cloveradmin");
   const params = {
