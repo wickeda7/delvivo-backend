@@ -137,93 +137,89 @@ const register = async (ctx) => {
     isMember = true;
   }
 
-  const entry = await getPakms(merchant_id);
-  console.log("merchant_id", merchant_id);
-  console.log("entry", entry);
-  if (entry.access_token) {
-    const pluginStore = await strapi.store({
-      type: "plugin",
-      name: "users-permissions",
+  // const entry = await getPakms(merchant_id);
+  // console.log("merchant_id", merchant_id);
+  // console.log("entry", entry);
+  //if (entry.access_token) {
+  const pluginStore = await strapi.store({
+    type: "plugin",
+    name: "users-permissions",
+  });
+  const settings = await pluginStore.get({ key: "advanced" });
+  //const cloverId = await createCloverUser(ctx, entry.access_token);
+  const role = await getRoleId(isMember, settings.default_role, "cloveradmin");
+  const params = {
+    ..._.omit(
+      {
+        firstName,
+        lastName,
+        email,
+        password,
+        // cloverId,
+        phoneNumber,
+        merchant_id,
+        address,
+        city,
+        state,
+        zip,
+      },
+      [
+        "confirmed",
+        "blocked",
+        "confirmationToken",
+        "resetPasswordToken",
+        "provider",
+        "id",
+        "createdAt",
+        "updatedAt",
+        "createdBy",
+        "updatedBy",
+        "role",
+      ]
+    ),
+    provider: "local",
+  };
+
+  const { provider } = params;
+  const identifierFilter = {
+    $or: [{ email: email.toLowerCase() }],
+  };
+  const conflictingUserCount = await strapi
+    .query("plugin::users-permissions.user")
+    .count({
+      where: { ...identifierFilter, provider },
     });
-    const settings = await pluginStore.get({ key: "advanced" });
-    const cloverId = await createCloverUser(ctx, entry.access_token);
-    const role = await getRoleId(
-      isMember,
-      settings.default_role,
-      "cloveradmin"
-    );
-    const params = {
-      ..._.omit(
-        {
-          firstName,
-          lastName,
-          email,
-          password,
-          cloverId,
-          phoneNumber,
-          merchant_id,
-          address,
-          city,
-          state,
-          zip,
-        },
-        [
-          "confirmed",
-          "blocked",
-          "confirmationToken",
-          "resetPasswordToken",
-          "provider",
-          "id",
-          "createdAt",
-          "updatedAt",
-          "createdBy",
-          "updatedBy",
-          "role",
-        ]
-      ),
-      provider: "local",
-    };
-
-    const { provider } = params;
-    const identifierFilter = {
-      $or: [{ email: email.toLowerCase() }],
-    };
-    const conflictingUserCount = await strapi
-      .query("plugin::users-permissions.user")
-      .count({
-        where: { ...identifierFilter, provider },
-      });
-    if (conflictingUserCount > 0) {
-      throw new ApplicationError("Email is already taken");
-    }
-
-    const newUser = {
-      ...params,
-      role: role.id,
-      email: email.toLowerCase(),
-      confirmed: !settings.email_confirmation,
-    };
-    const user = await getService("user").add(newUser);
-    const sanitizedUser = await sanitizeUser(user, ctx);
-
-    sanitizedUser["roleId"] = role.id;
-    if (settings.email_confirmation) {
-      try {
-        await getService("user").sendConfirmationEmail(sanitizedUser);
-      } catch (err) {
-        throw new ApplicationError(err.message);
-      }
-
-      return ctx.send({ user: sanitizedUser });
-    }
-    const jwt = getService("jwt").issue(_.pick(user, ["id"]));
-
-    return {
-      jwt,
-      user: sanitizedUser,
-    };
+  if (conflictingUserCount > 0) {
+    throw new ApplicationError("Email is already taken");
   }
-  return { error: "No access token" };
+
+  const newUser = {
+    ...params,
+    role: role.id,
+    email: email.toLowerCase(),
+    confirmed: !settings.email_confirmation,
+  };
+  const user = await getService("user").add(newUser);
+  const sanitizedUser = await sanitizeUser(user, ctx);
+
+  sanitizedUser["roleId"] = role.id;
+  if (settings.email_confirmation) {
+    try {
+      await getService("user").sendConfirmationEmail(sanitizedUser);
+    } catch (err) {
+      throw new ApplicationError(err.message);
+    }
+
+    return ctx.send({ user: sanitizedUser });
+  }
+  const jwt = getService("jwt").issue(_.pick(user, ["id"]));
+
+  return {
+    jwt,
+    user: sanitizedUser,
+  };
+  //}
+  //return { error: "No access token" };
 };
 
 const login = async (ctx) => {
