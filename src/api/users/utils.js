@@ -120,6 +120,8 @@ const createCloverUser = async (ctx, access_token) => {
   return cloverId;
 };
 const register = async (ctx) => {
+  console.log("ctx.request.body", ctx.request.body);
+  console.log("ctx.request.body", ctx.request);
   let {
     firstName,
     lastName,
