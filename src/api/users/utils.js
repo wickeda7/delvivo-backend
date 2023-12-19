@@ -245,18 +245,18 @@ const login = async (ctx) => {
       },
     });
     if (!user) {
-      throw new ValidationError("Invalid identifier or password");
+      throw new ValidationError("Invalid Credentials");
     }
 
     if (!user.password) {
-      throw new ValidationError("Invalid identifier or password");
+      throw new ValidationError("Invalid Credentials");
     }
     const validPassword = await getService("user").validatePassword(
       params.password,
       user.password
     );
     if (!validPassword) {
-      throw new ValidationError("Invalid identifier or password");
+      throw new ValidationError("Invalid Credentials");
     }
     // if (user.merchant_id != merchant_id) {
     //   throw new ValidationError("Invalid merchant");
