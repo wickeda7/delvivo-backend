@@ -338,12 +338,10 @@ const userDb = async (data) => {
 const updateUser = async (ctx) => {
   const data = ctx.request.body.data;
   const { id } = ctx.params;
-  console.log("data", data);
   try {
     const user = await strapi
       .query("plugin::users-permissions.user")
       .findOne({ where: { id: id } });
-    console.log("user", user);
     if (!user) {
       throw new ApplicationError("User not found");
     }
@@ -361,7 +359,6 @@ const updateUser = async (ctx) => {
       delete data.currentPassword;
       delete data.newPassword;
     }
-    console.log("data", data);
     const entry = await getService("user").edit(user.id, data);
     return entry;
     //  // Return new jwt token
@@ -372,7 +369,6 @@ const updateUser = async (ctx) => {
     //   user: sanitizeOutput(user),
     // });
   } catch (error) {
-    console.log(error);
     throw new Error(error.message);
   }
 };
