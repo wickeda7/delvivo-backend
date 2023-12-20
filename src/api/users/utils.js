@@ -8,7 +8,6 @@ const CLOVER_APP_URL = process.env.CLOVER_APP_URL;
 const {
   getService,
 } = require("@strapi/plugin-users-permissions/server/utils/index");
-
 const { sanitize } = utils;
 const { ApplicationError, ValidationError } = utils.errors;
 
@@ -336,4 +335,45 @@ const userDb = async (data) => {
     throw new Error(error.message);
   }
 };
-module.exports = { register, login, getUser };
+const updateUser = async (ctx) => {
+  const data = ctx.request.body.data;
+  const { id } = ctx.params;
+  console.log("data", data);
+  try {
+    const user = await strapi
+      .query("plugin::users-permissions.user")
+      .findOne({ where: { id: id } });
+    console.log("user", user);
+    if (!user) {
+      throw new ApplicationError("User not found");
+    }
+    if (data.currentPassword && data.newPassword) {
+      const validPassword = await getService("user").validatePassword(
+        data.currentPassword,
+        user.password
+      );
+      if (!validPassword) {
+        throw new ValidationError("Invalid Credentials");
+      }
+      //data.password = bcrypt.hashSync(data.newPassword, 10);
+      data.password = data.newPassword;
+      data.resetPasswordToken = null;
+      delete data.currentPassword;
+      delete data.newPassword;
+    }
+    console.log("data", data);
+    const entry = await getService("user").edit(user.id, data);
+    return entry;
+    //  // Return new jwt token
+    //  ctx.send({
+    //   jwt: strapi.service("plugin::users-permissions.jwt").issue({
+    //     id: user.id,
+    //   }),
+    //   user: sanitizeOutput(user),
+    // });
+  } catch (error) {
+    console.log(error);
+    throw new Error(error.message);
+  }
+};
+module.exports = { register, login, getUser, updateUser };

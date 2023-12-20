@@ -50,4 +50,17 @@ module.exports = {
       ctx.badRequest(err);
     }
   },
+  async updateUser(ctx, next) {
+    try {
+      const data = await strapi.service("api::users.users").updateUser(ctx);
+      ctx.send(
+        {
+          data,
+        },
+        200
+      );
+    } catch (err) {
+      ctx.badRequest(err);
+    }
+  },
 };

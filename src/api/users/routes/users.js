@@ -29,5 +29,15 @@ module.exports = {
         middlewares: [],
       },
     },
+    {
+      // Path defined with an URL parameter
+      method: "PUT",
+      path: "/users/:id",
+      handler: "users.updateUser",
+      config: {
+        policies: [],
+        middlewares: [],
+      },
+    },
   ],
 };

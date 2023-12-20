@@ -1,5 +1,5 @@
 "use strict";
-const { register, login, getUser } = require("../utils");
+const { register, login, getUser, updateUser } = require("../utils");
 /**
  * users service
  */
@@ -30,6 +30,14 @@ module.exports = () => ({
       const result = await login(ctx);
       //const result = await testEmail(ctx);
 
+      return result;
+    } catch (error) {
+      throw error.message;
+    }
+  },
+  updateUser: async (ctx) => {
+    try {
+      const result = await updateUser(ctx);
       return result;
     } catch (error) {
       throw error.message;
