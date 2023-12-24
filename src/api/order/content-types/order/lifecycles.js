@@ -2,11 +2,16 @@ const {
   sendCustomerEmail,
   sendMerchantEmail,
 } = require("../../email/sendEmail");
+const { pushNotification } = require("../../pushToken");
 module.exports = {
   async afterUpdate(event, options) {
     const { result, params } = event;
-    //console.log("afterUpdate result", result);
-    console.log("afterUpdate params", params);
+
+    const departureTime = params.data.departureTime;
+    const pushToken = result.user.pushToken;
+    if (pushToken && departureTime) {
+      pushNotification(pushToken, result);
+    }
     const updateType = result.putType;
     if (updateType === "Mobile") {
       // @ts-ignore
