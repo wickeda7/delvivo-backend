@@ -108,6 +108,9 @@
       "relation": "oneToOne",
       "target": "api::driver.driver",
       "mappedBy": "user"
+    },
+    "pushToken": {
+      "type": "string"
     }
   }
 }
