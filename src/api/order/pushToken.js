@@ -4,7 +4,6 @@ const expo = new Expo();
 const pushNotification = async (pushTokens, data) => {
   let messages = [];
   for (let pushToken of pushTokens) {
-    console.log("pushToken", pushToken);
     if (!Expo.isExpoPushToken(pushToken)) {
       console.error(`Push token ${pushToken} is not a valid Expo push token`);
       throw new Error(`Push token ${pushToken} is not a valid Expo push token`);
@@ -28,7 +27,7 @@ const pushNotification = async (pushTokens, data) => {
     const isPickup = systemOrderTypeId === "PICK-UP-TYPE";
     const body = isPickup
       ? `Your order is ready for pickup at ${time}`
-      : `Your order is on the way and will arrive at ${time}`;
+      : `Your order is on the way at ${time}`;
 
     // Construct a message (see https://docs.expo.io/push-notifications/sending-notifications/)
     messages.push({

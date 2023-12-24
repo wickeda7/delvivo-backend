@@ -6,7 +6,6 @@ const { pushNotification } = require("../../pushToken");
 module.exports = {
   async afterUpdate(event, options) {
     const { result, params } = event;
-    console.log("result", result.user.id);
     const departureTime = params.data.departureTime;
     const pushToken = result.user.pushToken;
     if (pushToken && departureTime) {
