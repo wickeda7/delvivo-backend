@@ -4,6 +4,7 @@ const expo = new Expo();
 const pushNotification = async ([pushTokens], data) => {
   let messages = [];
   for (let pushToken of pushTokens) {
+    console.log("pushToken", pushToken);
     if (!Expo.isExpoPushToken(pushToken)) {
       console.error(`Push token ${pushToken} is not a valid Expo push token`);
       throw new Error(`Push token ${pushToken} is not a valid Expo push token`);
