@@ -10,7 +10,10 @@ module.exports = {
     const departureTime = params.data.departureTime;
     const pushToken = result.user.pushToken;
     if (pushToken && departureTime) {
-      pushNotification(pushToken, result);
+      let temp = [];
+      temp.push(pushToken);
+      // @ts-ignore
+      pushNotification(temp, result);
     }
     const updateType = result.putType;
     if (updateType === "Mobile") {
