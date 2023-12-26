@@ -46,6 +46,8 @@ module.exports = createCoreService("api::order.order", ({ strapi }) => ({
       //   }
       return resp;
     } catch (error) {
+      console.log("error1??", error.message);
+      console.log("error", error);
       throw new Error(error.message);
     }
   },

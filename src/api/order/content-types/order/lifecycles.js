@@ -40,6 +40,7 @@ module.exports = {
     }
     try {
       await sendMerchantEmail(orderId, merchant_id, createdAt, order);
+      console.log("sendMerchantEmail", orderId);
     } catch (error) {
       console.log(error);
     }
@@ -52,6 +53,7 @@ module.exports = {
         await sendCustomerEmail({ type: "new", resOrder: order, entry });
         // @ts-ignore
         strapi.ioServer.emit("newOrder", { order: event.result, entry });
+        console.log("sendCustomerEmail", orderId);
       } catch (error) {
         console.log(error);
       }
