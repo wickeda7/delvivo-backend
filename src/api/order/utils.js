@@ -211,7 +211,9 @@ const getCloverItems = async (ids, access_token, merchant_id) => {
 };
 const getItems = async (entryId, items, access_token, merchant_id) => {
   const ids = items.map(({ inventory_id }) => inventory_id);
+  console.log("getItems ids", ids);
   const res = await getCloverItems(ids, access_token, merchant_id);
+  console.log("getItems res", res);
   if (res.data) {
     const reps = await addOrder({ items: res.data, entryId });
     console.log("reps", reps);
