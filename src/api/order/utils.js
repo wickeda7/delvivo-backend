@@ -107,6 +107,7 @@ const addOrder = async (body) => {
       .create({ data: data });
     if (entry.id) {
       try {
+        console.log("addOrder getItems");
         const res = await getItems(
           entry.id,
           items,
@@ -124,6 +125,7 @@ const addOrder = async (body) => {
     const data = { itemContent: JSON.stringify(body.items) };
     console.log("data", body.entryId, data);
     try {
+      console.log("addOrder update");
       const entry = await strapi.db
         .query("api::order.order")
         .update({ where: { id: body.entryId }, data: data });
@@ -213,7 +215,7 @@ const getItems = async (entryId, items, access_token, merchant_id) => {
   const ids = items.map(({ inventory_id }) => inventory_id);
   console.log("getItems ids", ids);
   const res = await getCloverItems(ids, access_token, merchant_id);
-  console.log("getItems res", res);
+  console.log("getItems res", entryId, res.data);
   if (res.data) {
     const reps = await addOrder({ items: res.data, entryId });
     console.log("reps", reps);
