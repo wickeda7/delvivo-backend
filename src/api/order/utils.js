@@ -105,7 +105,15 @@ const addOrder = async (body) => {
     const entry = await strapi.db
       .query("api::order.order")
       .create({ data: data });
+    console.log("entry???", entry);
     if (entry.id) {
+      console.log(
+        "entry22???",
+        entry.id,
+        items,
+        body.access_token,
+        body.merchant_id
+      );
       try {
         const res = await getItems(
           entry.id,
@@ -117,14 +125,12 @@ const addOrder = async (body) => {
         return res;
       } catch (error) {
         console.log("error", error.message);
-        console.log("error2", error.data);
-        console.log("error2", error.response);
         throw new Error(error.message);
       }
     }
   } else {
     const data = { itemContent: JSON.stringify(body.items) };
-    console.log("data", data);
+    console.log("data", body.entryId, data);
     try {
       const entry = await strapi.db
         .query("api::order.order")
@@ -133,8 +139,6 @@ const addOrder = async (body) => {
       return entry;
     } catch (error) {
       console.log("error1", error.message);
-      console.log("error12", error.data);
-      console.log("error12", error.response);
       throw new Error(error.message);
     }
   }
