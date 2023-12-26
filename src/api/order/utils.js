@@ -27,7 +27,6 @@ const getCloverOrders = async (ctx) => {
     const result = await axios.request(options);
     let data = result.data.elements;
     // user id = 54 relation with customer field in orders table
-    console.log("data", data);
     let paidOrders = data.reduce(
       function (accumulator, curValue) {
         if (curValue.paymentState === "PAID") {
@@ -56,7 +55,6 @@ const getCloverOrders = async (ctx) => {
     );
 
     //const paidOrders = readFile("./test.json");
-    console.log("paidOrders", paidOrders);
     if (paidOrders.orders.length > 0) {
       const orderRes = await addOrderBulk(paidOrders.orders, "create"); /// add orders to db
       const itemRes = await getItemsBulk(
@@ -107,14 +105,12 @@ const addOrder = async (body) => {
       .create({ data: data });
     if (entry.id) {
       try {
-        console.log("addOrder getItems");
         const res = await getItems(
           entry.id,
           items,
           body.access_token,
           body.merchant_id
         );
-        console.log("res1", res);
         return res;
       } catch (error) {
         console.log("error", error.message);
@@ -123,13 +119,10 @@ const addOrder = async (body) => {
     }
   } else {
     const data = { itemContent: JSON.stringify(body.items) };
-    console.log("data", body.entryId, data);
     try {
-      console.log("addOrder update");
       const entry = await strapi.db
         .query("api::order.order")
         .update({ where: { id: body.entryId }, data: data });
-      console.log("entry", entry);
       return entry;
     } catch (error) {
       console.log("error1", error.message);
@@ -169,7 +162,6 @@ const getItemsBulk = async (items, accesToken, merchantId) => {
         itemContent: JSON.stringify(elements),
       };
       const res = await addOrderBulk(params, "update");
-      console.log("res", res);
     }
   }
   // const itemsRes = readFile("./test2.json");
@@ -193,9 +185,6 @@ const getCloverItems = async (ids, access_token, merchant_id) => {
     .join(",");
 
   try {
-    console.log(
-      `${CLOVER_APP_URL}/v3/merchants/${merchant_id}/items?filter=item.id in (${idsMap})&expand=menuItem`
-    );
     //@ts-ignore
     const res = await axios.get(
       `${CLOVER_APP_URL}/v3/merchants/${merchant_id}/items?filter=item.id in (${idsMap})&expand=menuItem`,
@@ -213,12 +202,9 @@ const getCloverItems = async (ids, access_token, merchant_id) => {
 };
 const getItems = async (entryId, items, access_token, merchant_id) => {
   const ids = items.map(({ inventory_id }) => inventory_id);
-  console.log("getItems ids", ids);
   const res = await getCloverItems(ids, access_token, merchant_id);
-  console.log("getItems res", entryId, res.data);
   if (res.data) {
     const reps = await addOrder({ items: res.data, entryId });
-    console.log("reps", reps);
     return reps;
   }
 };

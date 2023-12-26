@@ -7,14 +7,10 @@ module.exports = {
   async afterUpdate(event, options) {
     const { result, params } = event;
     let pushToken = null;
-    console.log("afterUpdate", result.user);
-    console.log("params", params);
     const departureTime = params.data.departureTime;
     if (result.user) {
       pushToken = result.user.pushToken;
     }
-    console.log("pushToken", pushToken);
-
     if (pushToken && departureTime) {
       let temp = [];
       temp.push(pushToken);
@@ -45,7 +41,6 @@ module.exports = {
     }
     try {
       await sendMerchantEmail(orderId, merchant_id, createdAt, order);
-      console.log("sendMerchantEmail", orderId);
     } catch (error) {
       console.log(error);
     }
@@ -58,7 +53,6 @@ module.exports = {
         await sendCustomerEmail({ type: "new", resOrder: order, entry });
         // @ts-ignore
         strapi.ioServer.emit("newOrder", { order: event.result, entry });
-        console.log("sendCustomerEmail", orderId);
       } catch (error) {
         console.log(error);
       }
