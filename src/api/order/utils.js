@@ -105,15 +105,7 @@ const addOrder = async (body) => {
     const entry = await strapi.db
       .query("api::order.order")
       .create({ data: data });
-    console.log("entry???", entry);
     if (entry.id) {
-      console.log(
-        "entry22???",
-        entry.id,
-        items,
-        body.access_token,
-        body.merchant_id
-      );
       try {
         const res = await getItems(
           entry.id,
@@ -199,6 +191,9 @@ const getCloverItems = async (ids, access_token, merchant_id) => {
     .join(",");
 
   try {
+    console.log(
+      `${CLOVER_APP_URL}/v3/merchants/${merchant_id}/items?filter=item.id in (${idsMap})&expand=menuItem`
+    );
     //@ts-ignore
     const res = await axios.get(
       `${CLOVER_APP_URL}/v3/merchants/${merchant_id}/items?filter=item.id in (${idsMap})&expand=menuItem`,
@@ -210,15 +205,18 @@ const getCloverItems = async (ids, access_token, merchant_id) => {
   } catch (error) {
     const { response } = error;
     const { request, ...errorObject } = response; // take everything but 'request'
-
+    console.log("errorObject", errorObject);
     throw new Error(errorObject.data.message);
   }
 };
 const getItems = async (entryId, items, access_token, merchant_id) => {
   const ids = items.map(({ inventory_id }) => inventory_id);
+  console.log("ids", ids);
   const res = await getCloverItems(ids, access_token, merchant_id);
+  console.log("res", res);
   if (res.data) {
     const reps = await addOrder({ items: res.data, entryId });
+    console.log("reps", reps);
     return reps;
   }
 };
