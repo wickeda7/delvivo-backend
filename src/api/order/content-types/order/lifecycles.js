@@ -51,7 +51,9 @@ module.exports = {
         // @ts-ignore
         strapi.ioServer.emit("newOrder", { order: event.result, entry });
       } catch (error) {
-        console.log(error);
+        console.log("error", error.data);
+        console.log("error", error.body);
+        console.log("error", error.message);
       }
     }, 5000);
   },
