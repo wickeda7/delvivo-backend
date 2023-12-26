@@ -39,6 +39,9 @@ module.exports = {
     try {
       await sendMerchantEmail(orderId, merchant_id, createdAt, order);
     } catch (error) {
+      console.log("error1", error.data);
+      console.log("error2", error.body);
+      console.log("error3", error.message);
       console.log(error);
     }
     setTimeout(async () => {
