@@ -80,18 +80,15 @@ module.exports = {
           access_token,
           customerInfo
         );
-      console.log("create orderInfo", orderInfo);
-      console.log(
-        "-------------------------------------------------------------------"
-      );
+      // console.log("create orderInfo", orderInfo);
+      // console.log(
+      //   "-------------------------------------------------------------------"
+      // );
       if (orderInfo) {
         orderInfo["createdOrders"] = order;
       }
       return orderInfo;
     } catch (err) {
-      console.log("error4", err.data);
-      console.log("error5", err.body);
-      console.log("error6", err.message);
       return err;
     }
   },

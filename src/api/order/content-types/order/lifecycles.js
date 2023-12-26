@@ -37,12 +37,8 @@ module.exports = {
       order = JSON.parse(order_content);
     }
     try {
-      console.log("sendMerchantEmail");
       await sendMerchantEmail(orderId, merchant_id, createdAt, order);
     } catch (error) {
-      console.log("error1", error.data);
-      console.log("error2", error.body);
-      console.log("error3", error.message);
       console.log(error);
     }
     setTimeout(async () => {
@@ -51,14 +47,11 @@ module.exports = {
         populate: ["user"],
       });
       try {
-        console.log("sendMerchantEmail");
         await sendCustomerEmail({ type: "new", resOrder: order, entry });
         // @ts-ignore
         strapi.ioServer.emit("newOrder", { order: event.result, entry });
       } catch (error) {
-        console.log("error", error.data);
-        console.log("error", error.body);
-        console.log("error", error.message);
+        console.log(error);
       }
     }, 5000);
   },

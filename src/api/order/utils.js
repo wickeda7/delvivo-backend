@@ -101,7 +101,7 @@ const addOrder = async (body) => {
       merchant_id: body.merchant_id,
       order_content: JSON.stringify(body.order),
     };
-    // console.log("data", data);
+    console.log("data", data);
     //
     const entry = await strapi.db
       .query("api::order.order")
@@ -116,17 +116,24 @@ const addOrder = async (body) => {
         );
         return res;
       } catch (error) {
+        console.log("error", error.message);
+        console.log("error2", error.data);
+        console.log("error2", error.response);
         throw new Error(error.message);
       }
     }
   } else {
     const data = { itemContent: JSON.stringify(body.items) };
+    console.log("data", data);
     try {
       const entry = await strapi.db
         .query("api::order.order")
         .update({ where: { id: body.entryId }, data: data });
       return entry;
     } catch (error) {
+      console.log("error1", error.message);
+      console.log("error12", error.data);
+      console.log("error12", error.response);
       throw new Error(error.message);
     }
   }
