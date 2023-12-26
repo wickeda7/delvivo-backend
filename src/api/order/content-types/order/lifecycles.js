@@ -8,6 +8,8 @@ module.exports = {
     const { result, params } = event;
     const departureTime = params.data.departureTime;
     const pushToken = result.user.pushToken;
+    console.log("pushToken", pushToken);
+
     if (pushToken && departureTime) {
       let temp = [];
       temp.push(pushToken);

@@ -101,7 +101,6 @@ const addOrder = async (body) => {
       merchant_id: body.merchant_id,
       order_content: JSON.stringify(body.order),
     };
-    console.log("data", data);
     //
     const entry = await strapi.db
       .query("api::order.order")
@@ -114,6 +113,7 @@ const addOrder = async (body) => {
           body.access_token,
           body.merchant_id
         );
+        console.log("res1", res);
         return res;
       } catch (error) {
         console.log("error", error.message);
@@ -129,6 +129,7 @@ const addOrder = async (body) => {
       const entry = await strapi.db
         .query("api::order.order")
         .update({ where: { id: body.entryId }, data: data });
+      console.log("entry", entry);
       return entry;
     } catch (error) {
       console.log("error1", error.message);
