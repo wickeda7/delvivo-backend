@@ -48,7 +48,6 @@ module.exports = createCoreService("api::merchant.merchant", ({ strapi }) => ({
       } catch (error) {}
       return;
     }
-
     const {
       access_token,
       merchant_id,
@@ -56,6 +55,7 @@ module.exports = createCoreService("api::merchant.merchant", ({ strapi }) => ({
         delivery: { id, fee, maxRadius, minOrderAmount },
       },
       notify_email,
+      logo,
     } = ctx.request.body.data;
 
     const headers = {
@@ -84,6 +84,7 @@ module.exports = createCoreService("api::merchant.merchant", ({ strapi }) => ({
           merchant_id,
           notify_email,
           order_types: JSON.stringify(ordertypes),
+          logo,
         };
         const entry = await strapi.db.query("api::merchant.merchant").update({
           where: { merchant_id: merchant_id },
@@ -101,6 +102,7 @@ module.exports = createCoreService("api::merchant.merchant", ({ strapi }) => ({
             typeof entry.address === "string"
               ? JSON.parse(entry.address)
               : entry.address,
+          logo: entry.logo,
         };
       }
       return response;
