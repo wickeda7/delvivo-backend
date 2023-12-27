@@ -57,6 +57,9 @@
     },
     "county": {
       "type": "string"
+    },
+    "logo": {
+      "type": "string"
     }
   }
 }
