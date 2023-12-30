@@ -97,7 +97,7 @@ module.exports = ({ env }) => ({
             keys: {
               useQueryParams: true,
             },
-            maxAge: 3600000000000,
+            maxAge: 360000000,
             method: "GET",
           },
         ],
