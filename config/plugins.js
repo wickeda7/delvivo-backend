@@ -60,6 +60,8 @@ module.exports = ({ env }) => ({
             host: env("REDIS_HOST"),
             port: env("REDIS_PORT"),
             db: 0,
+            username: env("REDIS_USER"),
+            password: env("REDIS_PASS"),
           },
           settings: {
             debug: false,
