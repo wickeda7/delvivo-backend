@@ -28,7 +28,10 @@
     "pg": "^8.11.3",
     "pg-connection-string": "^2.6.2",
     "socket.io": "^4.7.2",
+    "strapi-plugin-redis": "^1.0.1",
+    "strapi-plugin-rest-cache": "^4.2.8",
     "strapi-plugin-timezone-select": "^1.0.0",
+    "strapi-provider-rest-cache-redis": "^4.2.8",
     "strapio": "^3.0.2"
   },
   "author": {

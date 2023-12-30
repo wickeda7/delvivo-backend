@@ -50,7 +50,58 @@ module.exports = ({ env }) => ({
       },
     },
   },
-
+  // Step 1: Configure the redis connection
+  // @see https://github.com/strapi-community/strapi-plugin-redis
+  redis: {
+    config: {
+      connections: {
+        default: {
+          connection: {
+            host: env("REDIS_HOST"),
+            port: env("REDIS_PORT"),
+            db: 0,
+          },
+          settings: {
+            debug: false,
+          },
+        },
+      },
+    },
+  },
+  // Step 2: Configure the redis cache plugin
+  "rest-cache": {
+    config: {
+      provider: {
+        name: "redis",
+        options: {
+          max: 32767,
+          connection: "default",
+        },
+      },
+      strategy: {
+        enableEtagSupport: true,
+        logs: true,
+        clearRelatedCache: true,
+        maxAge: 36000000,
+        contentTypes: [
+          // list of Content-Types UID to cache
+          // "api::category.category",
+          // "api::article.article",
+          // "api::global.global",
+          // "api::homepage.homepage",
+          {
+            contentType: "api::merchant.merchant",
+            hitpass: false,
+            keys: {
+              useQueryParams: true,
+            },
+            maxAge: 3600000000000,
+            method: "GET",
+          },
+        ],
+      },
+    },
+  },
   // upload: {
   //   config: {
   //     provider: "aws-s3",
