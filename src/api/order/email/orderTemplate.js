@@ -11,6 +11,10 @@ const { formatPrice } = require("../utils");
 require("dotenv").config();
 
 const htmlTemplate = (data) => {
+  data.resOrder =
+    typeof data.resOrder === "string"
+      ? JSON.parse(data.resOrder)
+      : data.resOrder;
   const {
     resOrder: {
       id,

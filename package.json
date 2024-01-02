@@ -4,7 +4,7 @@
   "version": "0.1.0",
   "description": "A Strapi application",
   "engines": {
-    "node": "20.0.0",
+    "node": "18.19.0",
     "yarn": "1.22.19"
   },
   "scripts": {

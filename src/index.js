@@ -1,6 +1,7 @@
 "use strict";
 
 require("dotenv").config();
+const { registerRedish } = require("./api/users/utils");
 const HOST_URL = process.env.HOST_URL;
 module.exports = {
   /**
@@ -35,7 +36,37 @@ module.exports = {
           credentials: true,
         },
       });
-      //strapi.services.ioServer = ioServer; // register socket io inside strapi main object to use it globally anywhere
+
+      strapi.ioServer.use((socket, next) => {
+        const merchantId = socket.handshake.auth.merchantId;
+        if (!merchantId) {
+          return next(new Error("invalid merchantId"));
+        }
+        socket.merchantId = merchantId;
+        next();
+      });
+      strapi.ioServer.on("connection", (socket) => {
+        registerRedish(socket.merchantId, socket.id);
+        console.log("socket.merchantId", socket.merchantId);
+        console.log("socket.id", socket.id);
+        // socket.on("updateOrder", async ({ content, to }) => {
+        //   console.log("content", content);
+        //   console.log("to", to);
+        //   socket.to(to).emit("updateOrder", {
+        //     content,
+        //     from: socket.id,
+        //   });
+        // });
+        // socket.on("subscribe", async (merchant_id) => {
+        //   registerRedish(merchant_id, socket.id);
+
+        // });
+
+        // socket.on("disconnect", () => {
+        //   console.log("socket disconnected");
+        // });
+      });
+      //strapi.services.ioServer = strapi.ioServer; // register socket io inside strapi main object to use it globally anywhere
     });
   },
 };

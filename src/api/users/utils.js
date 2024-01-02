@@ -19,6 +19,7 @@ const {
   sendCustomerEmail,
   sendMerchantEmail,
 } = require("../order/email/sendEmail");
+const merchant = require("../merchant/controllers/merchant");
 
 const sanitizeUser = (user, ctx) => {
   const { auth } = ctx.state;
@@ -372,4 +373,15 @@ const updateUser = async (ctx) => {
     throw new Error(error.message);
   }
 };
-module.exports = { register, login, getUser, updateUser };
+const registerRedish = async (merchant_id, socket_id) => {
+  try {
+    strapi.plugins["rest-cache"].services.cacheStore.set(
+      merchant_id,
+      socket_id,
+      { XX: true, NX: true }
+    );
+  } catch (error) {
+    console.log(error);
+  }
+};
+module.exports = { register, login, getUser, updateUser, registerRedish };

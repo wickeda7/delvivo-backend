@@ -59,21 +59,19 @@ module.exports = createCoreService("api::order.order", ({ strapi }) => ({
   },
   sendemail: async (ctx, next) => {
     const { order } = ctx.request.body;
+
     try {
       // convert order to lifecycle format
       const newOrder = {};
+      const entry = {};
+      newOrder["resOrder"] = order.order_content;
+      entry["id"] = order.id;
+      entry["user"] = order.user;
+      entry["itemContent"] = order.itemContent;
 
       newOrder["type"] = "update";
-      newOrder["entry"] = { itemContent: order.itemContent, user: order.user };
-      order["email"] = order.user.email;
-      delete order.itemContent;
-      delete order.user;
-      const order_content = order.order_content;
-      newOrder["resOrder"] = {
-        ...order,
-        ...order_content,
-      };
-
+      newOrder["entry"] = entry;
+      newOrder["email"] = order.user.email;
       const data = await sendCustomerEmail(newOrder);
       if (data.status === "success") {
         if (order.putType === "Mobile") {
