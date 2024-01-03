@@ -22,6 +22,18 @@ module.exports = {
       // @ts-ignore
       pushNotification(temp, result);
     }
+    const userid = result.user.id;
+    const socketuserId = await strapi.plugins[
+      "rest-cache"
+    ].services.cacheStore.get(userid);
+    if (socketuserId) {
+      const data = { id: result.id };
+      if (params.data.departureTime)
+        data.departureTime = params.data.departureTime;
+      if (params.data.arriveTime) data.arriveTime = params.data.arriveTime;
+      // @ts-ignore
+      strapi.ioServer.to(socketuserId).emit("updateOrder", data);
+    }
 
     const updateType = result.putType;
     if (updateType === "Mobile") {
@@ -35,12 +47,6 @@ module.exports = {
         console.log(error);
       }
     }
-    //io.sockets.emit('new-message', {data: data, item: num});
-    //   socket.on('new-message', function(msgData){
-    //     if (msgData.item === xx) {
-    //         // handle just a particular message number here
-    //     }
-    // }
   },
   async afterCreate(event, options) {
     let order = {};

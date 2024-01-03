@@ -38,16 +38,16 @@ module.exports = {
       });
 
       strapi.ioServer.use((socket, next) => {
-        const merchantId = socket.handshake.auth.merchantId;
-        if (!merchantId) {
+        const userid = socket.handshake.auth.userid;
+        if (!userid) {
           return next(new Error("invalid merchantId"));
         }
-        socket.merchantId = merchantId;
+        socket.userid = userid;
         next();
       });
       strapi.ioServer.on("connection", (socket) => {
-        registerRedish(socket.merchantId, socket.id);
-        console.log("socket.merchantId", socket.merchantId);
+        registerRedish(socket.userid, socket.id);
+        console.log("socket.userid", socket.userid);
         console.log("socket.id", socket.id);
         // socket.on("updateOrder", async ({ content, to }) => {
         //   console.log("content", content);
