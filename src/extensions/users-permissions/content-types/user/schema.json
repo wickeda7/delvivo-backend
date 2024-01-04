@@ -103,9 +103,9 @@
     "cloverId": {
       "type": "string"
     },
-    "driver": {
+    "drivers": {
       "type": "relation",
-      "relation": "oneToOne",
+      "relation": "oneToMany",
       "target": "api::driver.driver",
       "mappedBy": "user"
     },
