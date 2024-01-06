@@ -282,7 +282,7 @@ const login = async (ctx) => {
     if (user.roleId === 3) {
       if (user.drivers.length > 0) {
         const driverIds = user.drivers.reduce((acc, driver) => {
-          acc.push(driver.id);
+          if (driver.available) acc.push(driver.id);
           return acc;
         }, []);
         registerRedish(`drivers_${user.merchant_id}`, driverIds);

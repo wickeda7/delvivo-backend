@@ -53,10 +53,10 @@ module.exports = {
     const {
       result: { id, orderId, merchant_id, createdAt, order_content },
     } = event;
-    const socketId = await strapi.plugins["rest-cache"].services.cacheStore.get(
-      merchant_id
-    );
-    console.log("socketId22", socketId);
+    const socketMechant = await strapi.plugins[
+      "rest-cache"
+    ].services.cacheStore.get(merchant_id);
+    console.log("socketId22", socketMechant);
     if (typeof order_content === "object") {
       order = order_content;
     } else {
@@ -73,11 +73,15 @@ module.exports = {
         populate: ["user"],
       });
       try {
+        const socketuserId = await strapi.plugins[
+          "rest-cache"
+        ].services.cacheStore.get(`drivers_${merchant_id}`);
         await sendCustomerEmail({ type: "new", resOrder: order, entry });
         // @ts-ignore
         strapi.ioServer
-          .to(socketId)
+          .to(socketMechant)
           .emit("newOrder", { order: event.result, entry });
+        console.log("socketuserId", socketuserId);
       } catch (error) {
         console.log(error);
       }
