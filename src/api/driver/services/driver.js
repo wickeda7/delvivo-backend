@@ -109,9 +109,23 @@ module.exports = createCoreService("api::driver.driver", ({ strapi }) => ({
         user: connect,
       };
       try {
+        //@ts-ignore
         const entry = await strapi.db
           .query("api::driver.driver")
           .create({ data: data });
+        const driverid = entry.id;
+        const merch = await strapi
+          .query("plugin::users-permissions.user")
+          .findOne({ where: { merchant_id } });
+        const id = merch.id;
+        const drivers = {
+          disconnect: [],
+          connect: [{ id: driverid, position: { start: true } }],
+        };
+        const connect = { id: driverid, position: { start: true } };
+        const dataUser = await getService("user").edit(id, {
+          drivers,
+        });
         return entry;
       } catch (error) {
         throw new Error(error.message);

@@ -238,7 +238,7 @@ const login = async (ctx) => {
 
     // Check if the user exists.
     const user = await strapi.query("plugin::users-permissions.user").findOne({
-      populate: ["role", "merchant", "driver"],
+      populate: ["role", "merchant", "drivers"],
       where: {
         provider,
         $or: [{ email: identifier.toLowerCase() }, { username: identifier }],
@@ -261,6 +261,7 @@ const login = async (ctx) => {
     // if (user.merchant_id != merchant_id) {
     //   throw new ValidationError("Invalid merchant");
     // }
+
     const advancedSettings = await store.get({ key: "advanced" });
     const requiresConfirmation = _.get(advancedSettings, "email_confirmation");
 
@@ -278,6 +279,15 @@ const login = async (ctx) => {
       delete user.merchant;
     }
     delete user.role;
+    if (user.roleId === 3) {
+      if (user.drivers.length > 0) {
+        const driverIds = user.drivers.reduce((acc, driver) => {
+          acc.push(driver.id);
+          return acc;
+        }, []);
+        registerRedish(`drivers_${user.merchant_id}`, driverIds);
+      }
+    }
     return {
       jwt: getService("jwt").issue({ id: user.id }),
       user: await sanitizeUser(user, ctx),
