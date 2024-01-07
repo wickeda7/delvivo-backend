@@ -370,7 +370,10 @@ const updateUser = async (ctx) => {
       delete data.currentPassword;
       delete data.newPassword;
     }
-    const entry = await getService("user").edit(user.id, data);
+    const entry = await getService("user").edit(user.id, {
+      data,
+      populate: ["role", "is_driver"],
+    });
     return entry;
     //  // Return new jwt token
     //  ctx.send({
