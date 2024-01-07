@@ -352,7 +352,7 @@ const updateUser = async (ctx) => {
   try {
     const user = await strapi
       .query("plugin::users-permissions.user")
-      .findOne({ where: { id: id } });
+      .findOne({ where: { id: id }, populate: ["is_driver"] });
     if (!user) {
       throw new ApplicationError("User not found");
     }
@@ -371,11 +371,7 @@ const updateUser = async (ctx) => {
       delete data.newPassword;
     }
     console.log("user", user);
-    const entry = await getService("user").edit(user.id, {
-      data,
-      populate: ["role", "is_driver"],
-    });
-    console.log("entry", entry);
+    const entry = await getService("user").edit(user.id, data);
     return entry;
     //  // Return new jwt token
     //  ctx.send({
