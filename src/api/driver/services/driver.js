@@ -107,6 +107,7 @@ module.exports = createCoreService("api::driver.driver", ({ strapi }) => ({
         profileImg,
         carImg,
         user: connect,
+        is_user: { id: user.id },
       };
       try {
         //@ts-ignore

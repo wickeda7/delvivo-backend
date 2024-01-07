@@ -8,10 +8,16 @@ module.exports = {
   async afterUpdate(event, options) {
     const { result, params } = event;
     const merchant_id = result.merchant_id;
+    let userid = null;
     let pushToken = null;
+    let socketuserId = null;
     const departureTime = params.data.departureTime;
     if (result.user) {
       pushToken = result.user.pushToken;
+      userid = result.user.id;
+      socketuserId = await strapi.plugins["rest-cache"].services.cacheStore.get(
+        userid
+      );
     }
     const socketId = await strapi.plugins["rest-cache"].services.cacheStore.get(
       merchant_id
@@ -22,10 +28,6 @@ module.exports = {
       // @ts-ignore
       pushNotification(temp, result);
     }
-    const userid = result.user.id;
-    const socketuserId = await strapi.plugins[
-      "rest-cache"
-    ].services.cacheStore.get(userid);
     if (socketuserId) {
       const data = { id: result.id };
       if (params.data.departureTime)
@@ -56,7 +58,7 @@ module.exports = {
     const socketMechant = await strapi.plugins[
       "rest-cache"
     ].services.cacheStore.get(merchant_id);
-    console.log("socketId22", socketMechant);
+    console.log("socketId22 socketMechant", socketMechant);
     if (typeof order_content === "object") {
       order = order_content;
     } else {
@@ -81,6 +83,18 @@ module.exports = {
         strapi.ioServer
           .to(socketMechant)
           .emit("newOrder", { order: event.result, entry });
+        if (socketuserId) {
+          for (let i = 0; i < socketuserId.length; i++) {
+            const driverSocketId = await strapi.plugins[
+              "rest-cache"
+            ].services.cacheStore.get(socketuserId[i]);
+            // @ts-ignore
+            strapi.ioServer.to(driverSocketId).emit("newOrder", {
+              order: event.result,
+              entry,
+            });
+          }
+        }
         console.log("socketuserId", socketuserId);
       } catch (error) {
         console.log(error);

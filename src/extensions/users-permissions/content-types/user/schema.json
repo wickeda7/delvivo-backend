@@ -111,6 +111,12 @@
     },
     "pushToken": {
       "type": "string"
+    },
+    "is_driver": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::driver.driver",
+      "inversedBy": "is_user"
     }
   }
 }
