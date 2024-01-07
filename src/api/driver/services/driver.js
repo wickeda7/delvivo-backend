@@ -85,6 +85,7 @@ module.exports = createCoreService("api::driver.driver", ({ strapi }) => ({
     };
     const user = await getService("user").add(newUser);
     if (user) {
+      console.log("user", user.id);
       const connect = { id: user.id };
       const data = {
         firstName,
@@ -115,9 +116,11 @@ module.exports = createCoreService("api::driver.driver", ({ strapi }) => ({
           .query("api::driver.driver")
           .create({ data: data });
         const driverid = entry.id;
+        console.log("driverid", driverid);
         const merch = await strapi
           .query("plugin::users-permissions.user")
           .findOne({ where: { merchant_id } });
+        console.log("merch", merch);
         const id = merch.id;
         const drivers = {
           disconnect: [],
