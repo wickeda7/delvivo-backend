@@ -93,6 +93,7 @@ module.exports = {
               order: event.result,
               entry,
             });
+            console.log("driverSocketId", socketuserId[i], driverSocketId);
           }
         }
         console.log("socketuserId", socketuserId);
