@@ -34,7 +34,7 @@ const htmlTemplate = (data) => {
       user: { lastName, firstName, email, address, city, state, zip },
     },
   } = data;
-  console.log("htmlTemplate", data);
+  console.log("htmlTemplate", data.resOrder);
   let track = false;
   let url = "";
   const HOST_URL = process.env.HOST_URL;
@@ -42,6 +42,7 @@ const htmlTemplate = (data) => {
   const name = firstName + " " + lastName;
   const dateObject = new Date(created);
   const date = dateObject.toLocaleString();
+  console.log("path", path);
   if (path) {
     track = true;
     url = `${HOST_URL}/maps/${id}/${path.id}`;

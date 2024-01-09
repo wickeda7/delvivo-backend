@@ -64,16 +64,16 @@ module.exports = createCoreService("api::order.order", ({ strapi }) => ({
       // convert order to lifecycle format
       const newOrder = {};
       const entry = {};
-      newOrder["resOrder"] = order.order_content;
-      console.log("order.order_content sendemail", order.order_content);
+
       entry["id"] = order.id;
       entry["user"] = order.user;
+      newOrder["email"] = order.user.email;
+      delete order.user;
       entry["itemContent"] = order.itemContent;
-
+      delete order.itemContent;
       newOrder["type"] = "update";
       newOrder["entry"] = entry;
-      newOrder["email"] = order.user.email;
-      console.log("newOrder sendemail", order);
+      newOrder["resOrder"] = order;
       const data = await sendCustomerEmail(newOrder);
       if (data.status === "success") {
         if (order.putType === "Mobile") {
