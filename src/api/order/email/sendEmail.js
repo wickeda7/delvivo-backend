@@ -13,9 +13,9 @@ const sendCustomerEmail = async (ctx) => {
       ? "Your Order Is Ready For Pickup"
       : "Your Order Is On The Way";
   }
-
+  console.log("resOrder.emai", resOrder.order_content.email, resOrder.email);
   const user = {
-    email: resOrder.email,
+    email: resOrder.order_content.email,
     subject,
   };
   //console.log("sendCustomerEmail", resOrder, entry);

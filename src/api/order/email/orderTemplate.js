@@ -16,7 +16,7 @@ const htmlTemplate = (data) => {
     typeof data.resOrder === "string"
       ? JSON.parse(data.resOrder)
       : data.resOrder;
-  const { resOrder, entry, path } = data;
+  const { resOrder, entry } = data;
   const {
     order_content: {
       id,
@@ -30,6 +30,7 @@ const htmlTemplate = (data) => {
       },
       source: { brand, last4, name: cardName },
     },
+    path,
   } = resOrder;
   const {
     itemContent,
