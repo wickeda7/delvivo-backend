@@ -50,6 +50,9 @@ const sendMerchantEmail = async (orderId, merchant_id, createdAt, order) => {
   console.log("notify_email", notify_email);
   console.log("subject", subject);
   console.log("text", text);
+  if (!notify_email) {
+    return;
+  }
   try {
     await strapi.plugins["email"].services.email.send({
       to: notify_email,
