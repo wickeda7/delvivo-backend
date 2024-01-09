@@ -65,6 +65,7 @@ module.exports = createCoreService("api::order.order", ({ strapi }) => ({
       const newOrder = {};
       const entry = {};
       newOrder["resOrder"] = order.order_content;
+      console.log("order.order_content sendemail", order.order_content);
       entry["id"] = order.id;
       entry["user"] = order.user;
       entry["itemContent"] = order.itemContent;
