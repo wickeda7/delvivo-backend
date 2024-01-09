@@ -47,6 +47,9 @@ const sendMerchantEmail = async (orderId, merchant_id, createdAt, order) => {
     where: { merchant_id: merchant_id },
   });
   const { notify_email } = entry;
+  console.log("notify_email", notify_email);
+  console.log("subject", subject);
+  console.log("text", text);
   try {
     await strapi.plugins["email"].services.email.send({
       to: notify_email,
@@ -55,7 +58,7 @@ const sendMerchantEmail = async (orderId, merchant_id, createdAt, order) => {
       // html: 'Hello world!',
     });
   } catch (err) {
-    console.log(err);
+    console.log("err,err,err", err);
   }
 };
 module.exports = { sendCustomerEmail, sendMerchantEmail };
