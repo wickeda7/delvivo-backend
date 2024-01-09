@@ -12,8 +12,6 @@ module.exports = {
     let pushToken = null;
     let socketuserId = null;
     const departureTime = params.data.departureTime;
-    console.log("result", result);
-    console.log("params", params);
     if (result.user) {
       pushToken = result.user.pushToken;
       userid = result.user.id;
@@ -44,7 +42,7 @@ module.exports = {
       // @ts-ignore
       // strapi.ioServer.emit("updateOrder", result);
       try {
-        // console.log("socketId", socketId);
+        console.log("socketId", socketId, result);
         // @ts-ignore
         strapi.ioServer.to(socketId).emit("updateOrder", result);
       } catch (error) {
