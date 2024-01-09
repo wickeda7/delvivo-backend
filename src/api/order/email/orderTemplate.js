@@ -16,25 +16,26 @@ const htmlTemplate = (data) => {
     typeof data.resOrder === "string"
       ? JSON.parse(data.resOrder)
       : data.resOrder;
+  const { resOrder, entry, path } = data;
   const {
-    resOrder: {
+    order_content: {
       id,
+      items,
       amount,
       tax_amount,
       created,
-      items,
       createdOrders: {
         orderType: { label },
         note,
       },
       source: { brand, last4, name: cardName },
-      path,
     },
-    entry: {
-      itemContent,
-      user: { lastName, firstName, email, address, city, state, zip },
-    },
-  } = data;
+  } = resOrder;
+  const {
+    itemContent,
+    user: { lastName, firstName, email, address, city, state, zip },
+  } = entry;
+
   console.log("htmlTemplate2", data.resOrder);
   let track = false;
   let url = "";
@@ -43,7 +44,7 @@ const htmlTemplate = (data) => {
   const name = firstName + " " + lastName;
   const dateObject = new Date(created);
   const date = dateObject.toLocaleString();
-  console.log("path", path);
+  console.log("path", id, path);
   if (path) {
     track = true;
     url = `${HOST_URL}/maps/${id}/${path.id}`;

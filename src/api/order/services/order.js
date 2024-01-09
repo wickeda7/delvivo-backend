@@ -73,6 +73,8 @@ module.exports = createCoreService("api::order.order", ({ strapi }) => ({
       delete order.itemContent;
       newOrder["type"] = "update";
       newOrder["entry"] = entry;
+      delete order.updatedBy;
+      delete order.driver;
       newOrder["resOrder"] = order;
       const data = await sendCustomerEmail(newOrder);
       if (data.status === "success") {
