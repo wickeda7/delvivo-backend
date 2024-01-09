@@ -11,6 +11,7 @@ const { formatPrice } = require("../utils");
 require("dotenv").config();
 
 const htmlTemplate = (data) => {
+  console.log("htmlTemplate", data);
   data.resOrder =
     typeof data.resOrder === "string"
       ? JSON.parse(data.resOrder)
@@ -34,7 +35,7 @@ const htmlTemplate = (data) => {
       user: { lastName, firstName, email, address, city, state, zip },
     },
   } = data;
-  console.log("htmlTemplate", data.resOrder);
+  console.log("htmlTemplate2", data.resOrder);
   let track = false;
   let url = "";
   const HOST_URL = process.env.HOST_URL;
