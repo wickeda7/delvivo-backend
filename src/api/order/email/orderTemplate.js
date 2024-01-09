@@ -11,7 +11,6 @@ const { formatPrice } = require("../utils");
 require("dotenv").config();
 
 const htmlTemplate = (data) => {
-  console.log("htmlTemplate", data);
   data.resOrder =
     typeof data.resOrder === "string"
       ? JSON.parse(data.resOrder)
@@ -37,7 +36,6 @@ const htmlTemplate = (data) => {
     user: { lastName, firstName, email, address, city, state, zip },
   } = entry;
 
-  console.log("htmlTemplate2", data.resOrder);
   let track = false;
   let url = "";
   const HOST_URL = process.env.HOST_URL;
@@ -45,7 +43,7 @@ const htmlTemplate = (data) => {
   const name = firstName + " " + lastName;
   const dateObject = new Date(created);
   const date = dateObject.toLocaleString();
-  console.log("path", id, path);
+
   if (path) {
     track = true;
     url = `${HOST_URL}/maps/${id}/${path.id}`;

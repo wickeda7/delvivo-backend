@@ -60,8 +60,7 @@ module.exports = {
       const merchant_id = body.merchant_id;
       const customerInfo = body.customerInfo;
       const { pakms_apikey, access_token } = await getPakms(merchant_id);
-      console.log("pakms_apikey", pakms_apikey);
-      console.log("access_token", access_token);
+
       const token = await createCardToken(card, pakms_apikey);
       // console.log("create token", token);
       // console.log(

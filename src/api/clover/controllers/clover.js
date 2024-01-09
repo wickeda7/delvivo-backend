@@ -2,8 +2,6 @@
 //controller
 module.exports = {
   async cloverSetup(ctx, next) {
-    console.log("cloverSetup");
-    console.log("ctx", ctx);
     ctx.send(
       {
         message: "cloverSetup",
