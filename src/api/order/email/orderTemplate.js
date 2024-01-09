@@ -34,6 +34,7 @@ const htmlTemplate = (data) => {
       user: { lastName, firstName, email, address, city, state, zip },
     },
   } = data;
+  console.log("htmlTemplate", data);
   let track = false;
   let url = "";
   const HOST_URL = process.env.HOST_URL;
