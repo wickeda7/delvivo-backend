@@ -65,9 +65,12 @@ module.exports = {
       order = JSON.parse(order_content);
     }
     try {
+      console.log("merchant_id", merchant_id);
+      console.log("orderId", orderId);
+      console.log("order", order);
       await sendMerchantEmail(orderId, merchant_id, createdAt, order);
     } catch (error) {
-      console.log(error);
+      console.log("error", error);
     }
     setTimeout(async () => {
       const entry = await strapi.entityService.findOne("api::order.order", id, {
@@ -88,12 +91,14 @@ module.exports = {
             const driverSocketId = await strapi.plugins[
               "rest-cache"
             ].services.cacheStore.get(socketuserId[i]);
-            // @ts-ignore
-            strapi.ioServer.to(driverSocketId).emit("newOrder", {
-              order: event.result,
-              entry,
-            });
-            console.log("driverSocketId", socketuserId[i], driverSocketId);
+            if (driverSocketId) {
+              // @ts-ignore
+              strapi.ioServer.to(driverSocketId).emit("newOrder", {
+                order: event.result,
+                entry,
+              });
+              console.log("driverSocketId", socketuserId[i], driverSocketId);
+            }
           }
         }
         console.log("socketuserId", socketuserId);
