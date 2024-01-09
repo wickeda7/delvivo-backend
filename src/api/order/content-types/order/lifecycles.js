@@ -42,7 +42,7 @@ module.exports = {
       // @ts-ignore
       // strapi.ioServer.emit("updateOrder", result);
       try {
-        console.log("socketId", socketId, result);
+        //console.log("socketId", socketId, result);
         // @ts-ignore
         strapi.ioServer.to(socketId).emit("updateOrder", result);
       } catch (error) {

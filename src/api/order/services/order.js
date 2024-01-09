@@ -72,7 +72,7 @@ module.exports = createCoreService("api::order.order", ({ strapi }) => ({
       newOrder["type"] = "update";
       newOrder["entry"] = entry;
       newOrder["email"] = order.user.email;
-      console.log("newOrder sendemail", newOrder);
+      console.log("newOrder sendemail", order);
       const data = await sendCustomerEmail(newOrder);
       if (data.status === "success") {
         if (order.putType === "Mobile") {
