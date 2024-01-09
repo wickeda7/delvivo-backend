@@ -47,9 +47,7 @@ const sendMerchantEmail = async (orderId, merchant_id, createdAt, order) => {
     where: { merchant_id: merchant_id },
   });
   const { notify_email } = entry;
-  console.log("notify_email", notify_email);
-  console.log("subject", subject);
-  console.log("text", text);
+
   if (!notify_email) {
     return;
   }

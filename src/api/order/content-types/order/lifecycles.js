@@ -65,9 +65,7 @@ module.exports = {
       order = JSON.parse(order_content);
     }
     try {
-      console.log("sendMerchantEmail", merchant_id);
       await sendMerchantEmail(orderId, merchant_id, createdAt, order);
-      console.log("sendMerchantEmail2", merchant_id);
     } catch (error) {
       console.log("error", error);
     }
