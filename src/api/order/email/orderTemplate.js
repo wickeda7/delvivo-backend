@@ -46,7 +46,7 @@ const htmlTemplate = (data) => {
 
   if (path) {
     track = true;
-    url = `${HOST_URL}/maps/${id}/${path.id}`;
+    url = `${HOST_URL}/tracking/${id}/${path.id}`;
   }
   if (data.resOrder.type) {
     const title = data.resOrder.isPickup
