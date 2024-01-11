@@ -19,9 +19,9 @@ module.exports = {
         userid
       );
     }
-    const socketId = await strapi.plugins["rest-cache"].services.cacheStore.get(
-      merchant_id
-    );
+    const socketMerchantId = await strapi.plugins[
+      "rest-cache"
+    ].services.cacheStore.get(merchant_id);
     if (pushToken && departureTime) {
       let temp = [];
       temp.push(pushToken);
@@ -39,12 +39,33 @@ module.exports = {
 
     const updateType = result.putType;
     if (updateType === "Mobile") {
+      const newOrder = {};
+      const entry = {};
+      result.order_content =
+        typeof result.order_content === "object"
+          ? result.order_content
+          : JSON.parse(result.order_content);
+      entry["id"] = result.id;
+      entry["user"] = result.user;
+      newOrder["email"] = result.user.email;
+      delete result.user;
+      entry["itemContent"] =
+        typeof result.itemContent === "object"
+          ? result.itemContent
+          : JSON.parse(result.itemContent);
+      delete result.itemContent;
+      newOrder["type"] = "update";
+      newOrder["entry"] = entry;
+      delete result.updatedBy;
+      delete result.driver;
+      newOrder["resOrder"] = result;
       // @ts-ignore
       // strapi.ioServer.emit("updateOrder", result);
       try {
         //console.log("socketId", socketId, result);
         // @ts-ignore
-        strapi.ioServer.to(socketId).emit("updateOrder", result);
+        strapi.ioServer.to(socketMerchantId).emit("updateOrder", result);
+        await sendCustomerEmail(newOrder);
       } catch (error) {
         console.log(error);
       }
@@ -98,7 +119,6 @@ module.exports = {
             }
           }
         }
-        console.log("socketuserId", socketuserId);
       } catch (error) {
         console.log(error);
       }
