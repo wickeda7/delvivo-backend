@@ -385,10 +385,12 @@ const updateUser = async (ctx) => {
   }
 };
 const registerRedish = async (merchant_id, socket_id) => {
+  const EXPIRE = 60;
   try {
     strapi.plugins["rest-cache"].services.cacheStore.set(
       merchant_id,
       socket_id,
+
       { XX: true, NX: true }
     );
   } catch (error) {

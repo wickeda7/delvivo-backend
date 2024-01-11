@@ -4,7 +4,13 @@ module.exports = {
       result: { id, orderId, paths },
       params,
     } = event;
-    // @ts-ignore
-    strapi.ioServer.emit("updatePaths", { paths, orderId, id });
+    const socketId = await strapi.plugins["rest-cache"].services.cacheStore.get(
+      orderId
+    );
+    console.log("afterUpdate", socketId, orderId, id);
+    if (socketId) {
+      // @ts-ignore
+      strapi.ioServer.to(socketId).emit("updatePaths", { paths, orderId, id });
+    }
   },
 };
