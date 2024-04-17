@@ -15,22 +15,56 @@ const htmlTemplate = (data) => {
     typeof data.resOrder === "string"
       ? JSON.parse(data.resOrder)
       : data.resOrder;
+
   const { resOrder, entry } = data;
-  const {
-    order_content: {
-      id,
-      items,
-      amount,
-      tax_amount,
-      created,
-      createdOrders: {
-        orderType: { label },
-        note,
-      },
-      source: { brand, last4, name: cardName },
-    },
-    path,
-  } = resOrder;
+  const id = resOrder.order_content ? resOrder.order_content.id : resOrder.id;
+  const items = resOrder.order_content
+    ? resOrder.order_content.items
+    : resOrder.items;
+  const amount = resOrder.order_content
+    ? resOrder.order_content.amount
+    : resOrder.amount;
+  const tax_amount = resOrder.order_content
+    ? resOrder.order_content.tax_amount
+    : resOrder.tax_amount;
+  const created = resOrder.order_content
+    ? resOrder.order_content.created
+    : resOrder.created;
+  const label = resOrder.order_content
+    ? resOrder.order_content.createdOrders.orderType.label
+    : resOrder.createdOrders.orderType.label;
+  const note = resOrder.order_content
+    ? resOrder.order_content.createdOrders.note
+    : resOrder.createdOrders.note;
+  const brand = resOrder.order_content
+    ? resOrder.order_content.source.brand
+    : resOrder.source.brand;
+  const last4 = resOrder.order_content
+    ? resOrder.order_content.source.last4
+    : resOrder.source.last4;
+  const cardName = resOrder.order_content
+    ? resOrder.order_content.source.name
+    : resOrder.source.name;
+  const path = resOrder.order_content
+    ? resOrder.order_content.path
+    : resOrder.path;
+
+  console.log("id2", id);
+  // const {
+  //   order_content: {
+  //     id,
+  //     items,
+  //     amount,
+  //     tax_amount,
+  //     created,
+  //     createdOrders: {
+  //       orderType: { label },
+  //       note,
+  //     },
+  //     source: { brand, last4, name: cardName },
+  //   },
+  //   path,
+  // } = resOrder;
   const {
     itemContent,
     user: { lastName, firstName, email, address, city, state, zip },

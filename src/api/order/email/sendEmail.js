@@ -13,12 +13,14 @@ const sendCustomerEmail = async (ctx) => {
       ? "Your Order Is Ready For Pickup"
       : "Your Order Is On The Way";
   }
-
+  const email = resOrder?.order_content
+    ? resOrder?.order_content.email
+    : resOrder?.email;
   const user = {
-    email: resOrder.order_content.email,
+    email: email,
     subject,
   };
-  //console.log("sendCustomerEmail", resOrder, entry);
+
   try {
     const orderTemplate = htmlTemplate({ resOrder, entry });
     await strapi.plugins["email"].services.email.sendTemplatedEmail(
